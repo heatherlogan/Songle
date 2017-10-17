@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Songle</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="songle_name">Songle</string>
+    <string name="newgame">New Game</string>
+    <string name="resume_game">Resume Game</string>
+    <string name="scoreboard">Scoreboard</string>
+    <string name="options">Options</string>
+    <string name="google_api_key">AIzaSyDzDbVgPEyV_NCaXfPlsD9mC1ou0g8R_SI</string>
+    <string name="vm">View Map</string>
+    <string name="view_col">View Collected Words</string>
+    <string name="guess">Guess The Song!</string>
+    <string name="bk_home">Back to Home Screen</string>
 </resources>
+

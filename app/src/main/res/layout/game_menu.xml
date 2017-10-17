@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.heatherlogan.songle.GameActivity"
+    android:background="@color/lightGreen"
+    android:paddingBottom="16dp"
+    android:paddingTop="200dp"
+    android:textAllCaps="false">
+
+
+
+    <LinearLayout
+        android:textAllCaps="false"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteY="249dp"
+        android:layout_marginRight="6dp"
+        app:layout_constraintRight_toRightOf="parent"
+        >
+
+        <Button
+            android:id="@+id/view_map"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/teal"
+            android:layout_weight="0.25"
+            android:text="@string/vm"
+            android:textSize="20sp"
+            android:textAllCaps="false"
+            android:textColor="@color/lightGreen"/>
+
+        <Button
+            android:id="@+id/view_collected_words"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:background="@color/teal"
+            android:text="@string/view_col"
+            android:textSize="20sp"
+            android:textAllCaps="false"
+            android:textColor="@color/lightGreen"/>
+
+        <Button
+            android:id="@+id/guess_song"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:background="@color/teal"
+            android:text="@string/guess"
+            android:textSize="20sp"
+            android:textAllCaps="false"
+            android:textColor="@color/lightGreen" />
+
+        <Button
+            android:id="@+id/back_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="@string/bk_home"
+            android:background="@color/teal"
+            android:textSize="20sp"
+            android:textAllCaps="false"
+            android:textColor="@color/lightGreen" />
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
