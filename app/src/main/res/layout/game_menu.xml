@@ -3,31 +3,46 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.heatherlogan.songle.GameActivity"
-    android:background="@color/lightGreen"
-    android:paddingTop="55dp">
+    android:background="@color/brightGreen"
+    android:paddingTop="40dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Playing Songle"
-        android:textColor="@color/teal"
+        android:text="@string/playing_songle"
+        android:textColor="@color/purple"
         android:textSize="50sp"
         android:textStyle="bold"
         android:gravity="center"
-        android:paddingBottom="50dp"
+        android:paddingBottom="25dp"
         android:id="@+id/textView"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView"
-        android:text="Time Played: 00.00"
+        android:text="Time Played: 01 hrs 23 mins"
         android:gravity="center"
-        android:textSize="20sp"
-        android:textColor="@color/teal"/>
+        android:textSize="25sp"
+        android:paddingBottom="20dp"
+        android:textColor="@color/purple"
+        android:id="@+id/textView4"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView4"
+        android:text="Steps: 1079"
+        android:gravity="center"
+        android:textSize="25sp"
+        android:textColor="@color/purple"
+        android:id="@+id/textView8"
+
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,18 +53,18 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="173dp"
         android:layout_margin="10dp"
-        android:paddingTop="70dp">
+        android:paddingTop="100dp">
 
         <Button
             android:id="@+id/view_map"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/teal"
+            android:background="@color/purple"
             android:layout_weight="0.25"
             android:text="@string/vm"
             android:textSize="20sp"
             android:textAllCaps="false"
-            android:textColor="@color/lightGreen"
+            android:textColor="@color/white"
             android:layout_margin="10dp"
             />
 
@@ -58,35 +73,48 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:background="@color/teal"
+            android:background="@color/purple"
             android:text="@string/view_col"
             android:textSize="20sp"
             android:textAllCaps="false"
-            android:textColor="@color/lightGreen"
+            android:textColor="@color/white"
             android:layout_margin="10dp"/>
 
         <Button
-            android:id="@+id/guess_song"
+            android:id="@+id/guess_song_bttn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:background="@color/teal"
+            android:background="@color/purple"
             android:text="@string/guess"
             android:textSize="20sp"
             android:textAllCaps="false"
-            android:textColor="@color/lightGreen"
+            android:textColor="@color/white"
             android:layout_margin="10dp"/>
 
         <Button
-            android:id="@+id/back_home"
+            android:id="@+id/view_map5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/purple"
+            android:layout_weight="0.25"
+            android:text="Get Hint"
+            android:textSize="20sp"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:layout_margin="10dp"
+            />
+
+        <Button
+            android:id="@+id/give_up_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:text="@string/back_to_home_screen"
-            android:background="@color/teal"
+            android:background="@color/purple"
+            android:text="Give Up"
             android:textSize="20sp"
             android:textAllCaps="false"
-            android:textColor="@color/lightGreen"
+            android:textColor="@color/white"
             android:layout_margin="10dp"/>
 
     </LinearLayout>

@@ -37,6 +37,8 @@
         </activity>
         <activity android:name=".OptionsActivity">
         </activity>
+        <activity android:name=".ViewCollectedWords">
+        </activity>
     </application>
 
 </manifest>

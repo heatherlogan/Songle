@@ -3,6 +3,7 @@ package com.example.heatherlogan.songle;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (checkServices()) {
             openGame();
+            newGame();
             loadPage();
         } else {
             System.out.print("No service");
@@ -46,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     /*--------------------------------------------- Buttons ----------------------------------------------------------*/
     private void openGame() {
-        Button newGameButton = findViewById(R.id.newGameButton);
-        newGameButton.setOnClickListener(new View.OnClickListener() {
+        Button resumeGameButton = findViewById(R.id.resumeGameButton);
+        resumeGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent gotoGame = new Intent(MainActivity.this, GameActivity.class);
@@ -55,6 +57,41 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void newGame(){
+        Button newGameButton = findViewById(R.id.newGameButton);
+        newGameButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+                View mView = getLayoutInflater().inflate(R.layout.new_game_dialog, null);
+
+                Button yesButton = (Button) mView.findViewById(R.id.yesButton);
+                yesButton.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view){
+                        Intent gotoNewGame = new Intent(MainActivity.this, GameActivity.class);
+                        startActivity(gotoNewGame);
+                    }
+                });
+                Button noButton = (Button) mView.findViewById(R.id.noButton);
+                noButton.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view){
+                        Intent stayOnPage = new Intent(MainActivity.this, MainActivity.class);
+                        startActivity(stayOnPage);
+                    }
+                });
+
+                mBuilder.setView(mView);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
+
+            }
+        });
+    }
+
+
     public void openScoreboard(View view) {
         Intent openScoreboard = new Intent(MainActivity.this, ScoreboardActivity.class);
         startActivity(openScoreboard);
@@ -65,8 +102,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(openOptions);
     }
 
-
     /* -------------Check for connection to google Play Services and Network Connection before entering game----------------------- */
+
     private boolean checkServices() {
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
         if (available == ConnectionResult.SUCCESS) {
@@ -120,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
      private String loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException {
 
             InputStream stream = null;
@@ -154,16 +190,14 @@ public class MainActivity extends AppCompatActivity {
          return result.toString();
 
 
-
-
-
      }
         //Given a string connection  of a url, sets up a string connection and gets an input stream.
 
         private InputStream downloadUrl(String urlString) throws IOException {
 
-           // System.out.println("Download URL: "+ URL);
+            System.out.println("Download URL: "+ URL);
             URL url = new URL(urlString);
+
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000);

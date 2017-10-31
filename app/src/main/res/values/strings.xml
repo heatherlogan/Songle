@@ -9,12 +9,13 @@
     <string name="google_api_key">AIzaSyDzDbVgPEyV_NCaXfPlsD9mC1ou0g8R_SI</string>
     <string name="vm">View Map</string>
     <string name="view_col">View Collected Words</string>
-    <string name="guess">Guess The Song!</string>
+    <string name="guess">Guess The Song</string>
     <string name="bk_home">Back to Home Screen</string>
     <string name="back_to_home_screen">Back to Home Screen</string>
     <string name="connection_error">Connection Error</string>
-    <string name="xml_error">XML Error!!!!!!!!!!!!</string>
+    <string name="xml_error">XML Error</string>
     <string name="title_activity_testing_parser">TestingParser</string>
-    <string name="title_activity_checking_da_parze">CheckingDaParze</string>
+    <string name="playing_songle">Playing Songle</string>
+    <string name="time_played_00_00">Time Played: 00.00</string>
 </resources>
 

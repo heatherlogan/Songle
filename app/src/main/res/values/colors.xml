@@ -6,6 +6,12 @@
     <color name="lightGreen">#D6FDD6</color>
     <color name="teal">#009999</color>
 
+    <color name="white"> #FFFFFF</color>
+    <color name="purple">#691A99</color>
+    <color name="brightGreen">#98EFAD</color>
+
+
+
 
     #90EE90
 </resources>

@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,6 +56,7 @@ public class MapActivity
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
     public static final String URL = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/09/map3.txt";
+
    //  public static final String testUrl2 = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/13/map2.txt";
    // public static final String testUrl3 = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/03/map2.txt";
 
@@ -62,10 +65,8 @@ public class MapActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        System.out.print("HEY");
-
-        downloadMap();
-
+        String urlString = URL.toString(); // replace with getKMLURL
+        new DownloadKmlTask().execute(urlString);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.google_map);
         mapFragment.getMapAsync(this);
@@ -79,11 +80,13 @@ public class MapActivity
                     .build();
         }
     }
+
     @Override
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -106,9 +109,11 @@ public class MapActivity
         gMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
+
     private void moveCamera(LatLng latLgn, float zoom) {
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLgn, zoom));
     }
+
 
     protected void createLocationRequest() {
 
@@ -156,7 +161,6 @@ public class MapActivity
             Log.e(TAG, "Permission not granted");
         }
     }
-
     @Override
     public void onLocationChanged(Location current) {
 
@@ -176,21 +180,19 @@ public class MapActivity
             }
             currentLocationMarker = gMap.addMarker(new MarkerOptions()
                     .position(lastLocationCoords)
-                    .title("Your Location"));
+                    .title("Your Location")); //Edit marker options here
        }
     }
-
-
 
     @Override
     public void onConnectionSuspended(int flat) {
         System.out.println(">>>>>onConnectionSuspended");
     }
+
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         System.out.println(">>>>onConnectionFailed");
     }
-
 
 
     /*------------------------------------------ Downloading/Parsing KML File -----------------------------------------  */
@@ -200,107 +202,126 @@ public class MapActivity
 
     String songNumber = getNextSong..
 
-        return "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/" + songNumber + "/" + mapNumber + ".txt"
+        return "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/" + getSongNumber() + "/" + getMapNumber() + ".txt"
 
         }*/
 
-
-
-    public void downloadMap() {
-
-        new DownloadKmlTask().execute(URL);
-
-    }
-
-    private class DownloadKmlTask extends AsyncTask<String, Void, String>{
+    private class DownloadKmlTask extends AsyncTask<String, Void, List<Placemark>> {
 
         @Override
-        protected String doInBackground(String ... urls){
-            try {
+        protected List<Placemark> doInBackground(String... urls) {
 
+            try {
                 return loadKmlFromNetwork(urls[0]);
 
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e(TAG, "io exception");
-                return "Connection Error";
+                return null;
 
             } catch (XmlPullParserException e) {
                 e.printStackTrace();
                 Log.e(TAG, "XML Error");
-                return "XML PP Exception";
+                return null;
             }
 
         }
-        @Override
-        protected void onPostExecute(String result){
 
-            System.out.println(result + "/n");
+        private List<Placemark> loadKmlFromNetwork(String url) throws IOException, XmlPullParserException {
+
+            InputStream stream = null;
+
+            KmlParser kParser = new KmlParser();
+            List<Placemark> placemarks = null;
+
+            String name = null;
+            String description = null;
+            String styleUrl = null;
+            LatLng coordinates = null;
+
+            Log.i(TAG, "beginning load kml from Network ");
+
+            try {
+                stream = downloadUrl(url);
+                placemarks = kParser.parseKml(stream);
+
+                //
+                BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+
+                String line;
+                while ((line = br.readLine()) != null) {
+                    System.out.println(line);
+                }
+                br.close(); //*/
+
+            } finally {
+                if (stream != null) {
+                    stream.close();
+                }
+            }
+            Log.i(TAG, "Markers downloaded");
+            return placemarks;
+        }
+
+        private InputStream downloadUrl(String urlString) throws IOException {
+
+            System.out.println("Download KML: " + urlString);
+
+            URL url = new URL(urlString);
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(10000);
+            conn.setConnectTimeout(15000);
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+
+            conn.connect();
+            return conn.getInputStream();
+        }
+
+
+        @Override
+        protected void onPostExecute(List<Placemark> placemarks){
+
+            printKML(placemarks);
+
+            if (placemarks != null) {
+                Log.i(TAG, "Adding markers");
+
+                for (Placemark pm : placemarks){
+                   // addMarker(pm.getName(), pm.getDescription(), pm.getStyleUrl(), pm.getCoordinates());
+                }
+            } else {
+                System.out.println("Placing Markers Error");
+            }
         }
     }
 
-    private String loadKmlFromNetwork(String url) throws IOException, XmlPullParserException {
 
-        InputStream stream = null;
-        KmlParser kParser = new KmlParser();
-        List<Placemark> placemarks = null;
 
-        String name = null;
-        String description = null;
-        String styleUrl = null;
-        LatLng coordinates = null;
+    private void printKML(List<Placemark> placemarks){
 
-        try {
-            stream = downloadUrl(url);
-            placemarks = kParser.parseKml(stream);
-
-        } finally {
-            if (stream != null) {
-                stream.close();
-            }
-        }
+        System.out.println("------ print kml ");
 
         StringBuilder result = new StringBuilder();
 
-        for (Placemark placemark : placemarks){
-            result.append("Name: " + name + "/n");
-            result.append("Description: " + description + "/n");
-            result.append("Styleurl: " + styleUrl + "/n");
-            result.append("Point: " + coordinates + "/n");
-
+        for (Placemark pm : placemarks) {
+            result.append("Name: " + pm.getName() + "/n");
+            result.append("Description: " + pm.getDescription() + "/n");
+            result.append("Styleurl: " + pm.getStyleUrl() + "/n");
+            result.append("Point: " + pm.getCoordinates() + "/n");
         }
-            // System.out.println(result.toString());
-        return result.toString();
+
+        System.out.println(result.toString());
     }
-
-
-    private InputStream downloadUrl(String urlString) throws IOException {
-
-        System.out.println("Download KML: " + URL);
-        URL url = new URL(urlString);
-
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setReadTimeout(10000);
-        conn.setConnectTimeout(15000);
-        conn.setRequestMethod("GET");
-        conn.setDoInput(true);
-
-        conn.connect();
-        return conn.getInputStream();
-
-    }
-
-
 
 
     /*---------------------------------------------------- Markers ----------------------------------------------------- */
 
-
-
     // Loop through KML info and create markers.
     Marker marker;
 
-    private void addMarkers(String name, String description, String styleUrl, LatLng coordinates){
+    private void addMarker(String name, String description, String styleUrl, LatLng coordinates){
 
         MarkerOptions options = new MarkerOptions()
                 .title(name)
@@ -310,6 +331,8 @@ public class MapActivity
 
         marker = gMap.addMarker(options);
     }
+
+
 
 
 }

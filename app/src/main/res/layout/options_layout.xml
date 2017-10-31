@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightGreen"
+    android:background="@color/brightGreen"
     android:paddingTop="70dp"
     tools:context="com.example.heatherlogan.songle.OptionsActivity">
 
@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Options"
-        android:textColor="@color/teal"
+        android:textColor="@color/purple"
         android:textSize="50dp"
         android:gravity="center"
         android:paddingBottom="70dp"
@@ -36,21 +36,25 @@
             android:id="@+id/button3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Button"
-            android:background="@color/teal"
+            android:textAllCaps="false"
+            android:text="How to play"
+            android:background="@color/purple"
             android:layout_margin="10dp"
+            android:textSize="18sp"
             android:layout_weight="0.25"
-            android:textColor="@color/lightGreen"/>
+            android:textColor="@color/white"/>
 
         <Button
             android:id="@+id/button6"
             android:layout_width="match_parent"
+            android:textAllCaps="false"
             android:layout_height="wrap_content"
             android:text="Button"
-            android:background="@color/teal"
+            android:background="@color/purple"
             android:layout_weight="0.25"
+            android:textSize="18sp"
             android:layout_margin="10dp"
-            android:textColor="@color/lightGreen"
+            android:textColor="@color/white"
             />
 
         <Button
@@ -58,31 +62,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Button"
-            android:background="@color/teal"
+            android:background="@color/purple"
             android:layout_weight="0.25"
+            android:textSize="18sp"
             android:layout_margin="10dp"
-            android:textColor="@color/lightGreen"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
             />
-
-        <Button
-            android:id="@+id/button5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button"
-            android:background="@color/teal"
-            android:layout_weight="0.25"
-            android:layout_margin="10dp"
-            android:textColor="@color/lightGreen"/>
 
         <Button
             android:id="@+id/button2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Button"
-            android:background="@color/teal"
+            android:background="@color/purple"
             android:layout_weight="0.25"
+            android:textSize="18sp"
             android:layout_margin="10dp"
-            android:textColor="@color/lightGreen"/>
+            android:textColor="@color/white"/>
 
     </LinearLayout>
 

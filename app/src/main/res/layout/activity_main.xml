@@ -6,15 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.heatherlogan.songle.GameActivity"
-    android:background="@color/lightGreen"
+    android:background="@color/brightGreen"
     android:paddingTop="50dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:textColor="@color/teal"
-        android:textSize="100sp"
+        android:textColor="@color/purple"
+        android:textSize="110sp"
         android:gravity="center"
         android:textStyle="bold"
         android:id="@+id/textView"/>
@@ -31,28 +31,28 @@
         android:paddingTop="70dp">
 
         <Button
-            android:id="@+id/newGameButton"
+            android:id="@+id/resumeGameButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/teal"
+            android:background="@color/purple"
             android:layout_weight="0.25"
-            android:text="@string/newgame"
-            android:textSize="20sp"
+            android:text="@string/resume_game"
+            android:textSize="30sp"
             android:textAllCaps="false"
-            android:textColor="@color/lightGreen"
+            android:textColor="@color/white"
             android:layout_margin="10dp"
             />
 
         <Button
-            android:id="@+id/resumeGameButton"
+            android:id="@+id/newGameButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:background="@color/teal"
-            android:text="@string/resume_game"
-            android:textSize="20sp"
+            android:background="@color/purple"
+            android:text="@string/newgame"
+            android:textSize="30sp"
             android:textAllCaps="false"
-            android:textColor="@color/lightGreen"
+            android:textColor="@color/white"
             android:layout_margin="10dp"/>
 
         <Button
@@ -60,13 +60,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:background="@color/teal"
+            android:background="@color/purple"
             android:text="@string/scoreboard"
-            android:textSize="20sp"
+            android:textSize="30sp"
             android:textAllCaps="false"
             android:onClick="openScoreboard"
-            android:textColor="@color/lightGreen"
-            android:layout_margin="10dp"/>
+            android:textColor="@color/white"
+            android:layout_margin="10dp"
+            />
 
         <Button
             android:id="@+id/optionsButton"
@@ -74,12 +75,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
             android:text="@string/options"
-            android:background="@color/teal"
-            android:textSize="20sp"
+            android:background="@color/purple"
+            android:textSize="30sp"
             android:textAllCaps="false"
             android:onClick="openOptions"
-            android:textColor="@color/lightGreen"
-            android:layout_margin="10dp"/>
+            android:textColor="@color/white"
+            android:layout_margin="10dp"
+            />
 
     </LinearLayout>
 
