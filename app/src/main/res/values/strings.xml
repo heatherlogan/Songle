@@ -11,5 +11,10 @@
     <string name="view_col">View Collected Words</string>
     <string name="guess">Guess The Song!</string>
     <string name="bk_home">Back to Home Screen</string>
+    <string name="back_to_home_screen">Back to Home Screen</string>
+    <string name="connection_error">Connection Error</string>
+    <string name="xml_error">XML Error!!!!!!!!!!!!</string>
+    <string name="title_activity_testing_parser">TestingParser</string>
+    <string name="title_activity_checking_da_parze">CheckingDaParze</string>
 </resources>
 

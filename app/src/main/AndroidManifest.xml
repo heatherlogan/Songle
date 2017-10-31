@@ -15,14 +15,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDzDbVgPEyV_NCaXfPlsD9mC1ou0g8R_SI"/>
-
         <meta-data
             android:name="com.google.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version"/>
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -34,6 +32,10 @@
         <activity android:name=".GameActivity">
         </activity>
         <activity android:name=".MapActivity">
+        </activity>
+        <activity android:name=".ScoreboardActivity">
+        </activity>
+        <activity android:name=".OptionsActivity">
         </activity>
     </application>
 
