@@ -10,7 +10,7 @@
         android:id="@+id/textView3"
         android:layout_width="match_parent"
         android:layout_height="60sp"
-        android:text="Scoreboard"
+        android:text="Unlocked Songs"
         android:textSize="35dp"
         android:padding="10dp"
         android:background="@color/blue"
@@ -23,64 +23,49 @@
         android:layout_width="match_parent"
         android:layout_height="50sp"
         android:text="Collected Words"
-        android:textSize="30dp"
-        android:padding="10dp"
+        android:textSize="20dp"
         android:textColor="@color/white"
-        android:textAlignment="center"
         android:textStyle="bold"
+        android:paddingTop="10dp"
         android:weightSum="100">
 
         <TextView
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="User"
-            android:paddingLeft="15dp"
+            android:text="  Song"
             android:textSize="20sp"
+
             android:textColor="@color/blue"
             android:layout_weight="50"/>
+
         <TextView
-            android:layout_width="60dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Level"
+
             android:textSize="20sp"
             android:textColor="@color/blue"
-            android:layout_weight="20"/>
-        <TextView
-            android:layout_width="60dp"
-            android:layout_height="match_parent"
-            android:textAlignment="center"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:textColor="@color/blue"
-            android:text="Time"
-            android:layout_weight="10"/>
-        <TextView
-            android:layout_width="60sp"
-            android:layout_height="match_parent"
-            android:text="Steps"
-            android:textAlignment="center"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:textColor="@color/blue"
-            android:layout_weight="10"/>
+            android:text="  Artist"
+            android:layout_weight="50"
+            android:paddingRight="10dp"/>
+
 
     </LinearLayout>
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:id="@+id/scoreboardListView"/>
+        android:layout_height="450dp"
+        android:id="@+id/unlockedSongsListview"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="119dp"
         android:orientation="horizontal"
-        android:padding="40dp"
-       >
+        android:padding="30dp"
+        android:paddingBottom="50dp">
 
         <Button
             android:textAllCaps="false"
-            android:id="@+id/gobackScoreboard"
+            android:id="@+id/gobackColWords"
             android:textColor="@color/lightGrey"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -91,5 +76,6 @@
             android:layout_marginRight="5dp"/>
 
     </LinearLayout>
+
 
 </LinearLayout>

@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:background="@color/purple"
+              android:background="@drawable/myanalog"
               android:layout_width="match_parent"
               android:layout_height="250dp"
-              android:padding="5dp"
+              android:padding="15dp"
               android:weightSum="1">
 
     <TextView
         android:id="@+id/guessHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Guess Song!"
         android:layout_gravity="center"
-        android:textColor="@color/white"
-        android:textSize="35dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="0.17"
+        android:textColor="@color/grey"
+        android:text="Guess Song"
         android:textAlignment="center"
-        android:layout_weight="0.17"/>
+        android:textSize="45dp"/>
 
 
     <EditText
         android:layout_margin="10dp"
         android:id="@+id/songGuessEnter"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:layout_below="@id/guessHeader"
-        android:hint="    Enter Guess"
-        android:textColorHint="@color/white"
-        android:background="@color/purple"
+        android:hint="Enter Song Title"
+        android:background="#EEEEEE"
+        android:textColorHint="@color/blue"
         android:ems="10"
         android:inputType="text"
-        android:textColor="@color/white"
+
 
         />
 
@@ -41,20 +41,20 @@
         android:layout_below="@id/songGuessEnter"
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
-        android:padding="15dp"
+        android:padding="10dp"
         >
 
 
         <Button
             android:textAllCaps="false"
             android:id="@+id/enterButton"
-            android:textColor="@color/purple"
+            android:textColor="@color/lightGrey"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Enter"
             android:layout_gravity="center"
             android:textSize="20dp"
-            android:background="@color/brightGreen"
+            android:background="@drawable/mybutton"
             android:layout_marginRight="5dp"
             android:layout_weight="0.5"/>
 
@@ -64,11 +64,11 @@
             android:layout_height="match_parent"
             android:layout_width="match_parent"
             android:text="Go Back"
-            android:textColor="@color/purple"
+            android:textColor="@color/lightGrey"
             android:layout_marginLeft="10dp"
             android:textSize="20dp"
             android:layout_gravity="center"
-            android:background="@color/brightGreen"
+            android:background="@drawable/mybutton"
             android:layout_weight="0.5"/>
 
 

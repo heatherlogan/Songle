@@ -6,41 +6,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.heatherlogan.songle.GameActivity"
-    android:background="@color/brightGreen"
+    android:background="@color/white"
     android:paddingTop="50dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:textColor="@color/purple"
+        android:textColor="@color/blue"
         android:textSize="110sp"
         android:gravity="center"
         android:textStyle="bold"
+        android:paddingBottom="30dp"
         android:id="@+id/textView"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         android:orientation="vertical"
         android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="173dp"
-        android:layout_margin="10dp"
-        android:paddingTop="70dp">
+        android:layout_marginTop="10dp"
+        android:paddingTop="40dp"
+        android:paddingBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
 
         <Button
             android:id="@+id/resumeGameButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/purple"
-            android:layout_weight="0.25"
+            android:background="@drawable/mybutton"
             android:text="@string/resume_game"
+            android:layout_weight="0.25"
             android:textSize="30sp"
             android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:layout_margin="10dp"
+            android:textColor="@color/lightGrey"
+            android:layout_margin="5dp"
             />
 
         <Button
@@ -48,25 +51,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:background="@color/purple"
+            android:background="@drawable/mybutton"
             android:text="@string/newgame"
             android:textSize="30sp"
             android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:layout_margin="10dp"/>
+            android:textColor="@color/lightGrey"
+            android:layout_margin="5dp"/>
 
         <Button
             android:id="@+id/scoreboardButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:background="@color/purple"
+            android:background="@drawable/mybutton"
             android:text="@string/scoreboard"
             android:textSize="30sp"
             android:textAllCaps="false"
             android:onClick="openScoreboard"
-            android:textColor="@color/white"
-            android:layout_margin="10dp"
+            android:textColor="@color/lightGrey"
+            android:layout_margin="5dp"
             />
 
         <Button
@@ -75,12 +78,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
             android:text="@string/options"
-            android:background="@color/purple"
+            android:background="@drawable/mybutton"
             android:textSize="30sp"
             android:textAllCaps="false"
             android:onClick="openOptions"
-            android:textColor="@color/white"
-            android:layout_margin="10dp"
+            android:textColor="@color/lightGrey"
+            android:layout_margin="5dp"
             />
 
     </LinearLayout>

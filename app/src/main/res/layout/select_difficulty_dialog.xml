@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="300dp"
+              android:layout_height="400dp"
+              android:background="@drawable/myanalog"
+              android:padding="15dp">
+
+    <TextView
+        android:id="@+id/textHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="@color/grey"
+        android:textSize="30dp"
+        android:layout_gravity="center"
+        android:paddingTop="10dp"
+        android:text="Select Difficulty"
+        android:textAlignment="center"/>
+
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        android:id="@+id/rg"
+        android:padding="10dp"
+        >
+
+        <RadioButton
+            android:id="@+id/veryEasyRB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="20dp"
+            android:textColor="@color/blue"
+            android:text="Very Easy"
+            android:checked = "false"/>
+
+        <RadioButton
+            android:id="@+id/easyRB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="20dp"
+            android:textColor="@color/blue"
+            android:text="Easy"
+            android:checked = "false"/>
+
+        <RadioButton
+            android:id="@+id/mediumRB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/blue"
+            android:textSize="20dp"
+            android:text="Medium"
+            android:checked = "false"/>
+
+        <RadioButton
+            android:id="@+id/hardRB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="20dp"
+            android:textColor="@color/blue"
+            android:text="Hard"
+            android:checked = "false"/>
+
+        <RadioButton
+            android:id="@+id/veryHardRB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="20dp"
+            android:textColor="@color/blue"
+            android:text="Very Hard"
+            android:checked = "false"/>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/playButton7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/mybutton"
+        android:textColor="@color/lightGrey"
+        android:textSize="25dp"
+        android:text="Play"/>
+
+
+</LinearLayout>
+

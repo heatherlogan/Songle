@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:background="@drawable/myanalog"
+              android:layout_width="match_parent"
+              android:layout_height="300dp"
+              android:padding="5dp"
+              android:weightSum="1">
+
+    <TextView
+        android:id="@+id/giveUpHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:text="Correct! "
+        android:layout_gravity="center"
+        android:textSize="40dp"
+        android:layout_marginTop="10dp"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:layout_weight="0.17"/>
+
+    <TextView
+    android:id="@+id/correctSongInfo"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="5dp"
+    android:layout_weight="0.17"
+    android:lineSpacingExtra="5dp"
+    android:text="Song: Another Brick In The Wall\n By: Pink Floyd"
+    android:textAlignment="center"
+    android:textColor="@color/grey"
+    android:textSize="20sp"/>
+    <TextView
+        android:id="@+id/songlink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0.17"
+        android:autoLink="all"
+        android:clickable="true"
+        android:textColorLink="@color/blue"
+        android:text="https://youtu.be/HrxX9TBj2zY "
+        android:textAlignment="center"
+        android:textColor="@color/grey"
+        android:textSize="20sp"
+        />
+
+    <TextView
+        android:id="@+id/giveUpHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/grey"
+        android:text="You completed the game in 1 hr 2 mins and took 1034 steps!"
+        android:lineSpacingExtra="5dp"
+        android:layout_gravity="center"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:textAlignment="center"
+        android:layout_weight="0.17"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_below="@id/giveUpHeader"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:padding="15dp"
+        >
+
+        <Button
+            android:textAllCaps="false"
+            android:id="@+id/continue3"
+            android:textColor="@color/lightGrey"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Continue"
+            android:layout_gravity="center"
+            android:textSize="20dp"
+            android:background="@drawable/mybutton"
+            android:layout_marginRight="5dp"
+            android:layout_weight="0.5"/>
+
+  ]
+
+
+    </LinearLayout>
+
+</LinearLayout>

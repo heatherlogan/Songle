@@ -1,17 +1,20 @@
 package com.example.heatherlogan.songle;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.net.NetworkInfo;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.app.Dialog;
+import android.widget.RadioGroup;
+import android.widget.RadioButton;
+import android.widget.Toast;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -21,26 +24,34 @@ import java.net.HttpURLConnection;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import org.apache.commons.io.IOUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.MapView;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int ERROR_DIALOG_REQUEST = 9001;
+    public final String TAG = "MainActivity";
     public static final String WIFI = "Wi-fi";
-    public static final String URL = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/songs.txt";
+
+    private RadioGroup difficultyoptions;
+    int difficultyChoice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        MapsInitializer.initialize(getApplicationContext());
 
         if (checkServices()) {
             openGame();
             newGame();
-            loadPage();
+
         } else {
             System.out.print("No service");
         }
@@ -58,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Need to add Radio Button Functions
     private void newGame(){
         Button newGameButton = findViewById(R.id.newGameButton);
         newGameButton.setOnClickListener(new View.OnClickListener(){
@@ -68,10 +80,58 @@ public class MainActivity extends AppCompatActivity {
 
                 Button yesButton = (Button) mView.findViewById(R.id.yesButton);
                 yesButton.setOnClickListener(new View.OnClickListener(){
+
+                    // Choosing to start a new game brings up dialog to choose difficulty level
                     @Override
                     public void onClick(View view){
-                        Intent gotoNewGame = new Intent(MainActivity.this, GameActivity.class);
-                        startActivity(gotoNewGame);
+                        AlertDialog.Builder m2Builder = new AlertDialog.Builder(MainActivity.this);
+                        View m2View = getLayoutInflater().inflate(R.layout.select_difficulty_dialog, null);
+
+                        difficultyoptions = (RadioGroup) m2View.findViewById(R.id.rg);
+
+                        difficultyoptions.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+
+                                RadioButton radiob = (RadioButton) radioGroup.findViewById(checkedId);
+
+                                switch(radiob.getId()){
+                                    case R.id.veryEasyRB:
+                                        difficultyChoice = 5;
+                                        break;
+                                    case R.id.easyRB:
+                                        difficultyChoice = 4;
+                                        break;
+                                    case R.id.mediumRB:
+                                        difficultyChoice = 3;
+                                        break;
+                                    case R.id.hardRB:
+                                        difficultyChoice = 2;
+                                        break;
+                                    case R.id.veryHardRB:
+                                        difficultyChoice = 1;
+                                        break;
+                                }
+                            }
+                        });
+                        //Enter button in Select Difficulty Level launches new game
+
+                        Button playButton7 = (Button) m2View.findViewById(R.id.playButton7);
+                        playButton7.setOnClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View view){
+
+                                Toast toast = Toast.makeText(MainActivity.this, "map" + difficultyChoice, Toast.LENGTH_LONG);
+                                toast.show();
+
+                                Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                                intent.putExtra("mapNo", difficultyChoice);
+                                startActivity(intent);
+                            }
+                        });
+                        m2Builder.setView(m2View);
+                        final AlertDialog dialog2 = m2Builder.create();
+                        dialog2.show();
                     }
                 });
                 Button noButton = (Button) mView.findViewById(R.id.noButton);
@@ -90,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     public void openScoreboard(View view) {
         Intent openScoreboard = new Intent(MainActivity.this, ScoreboardActivity.class);
@@ -124,92 +183,15 @@ public class MainActivity extends AppCompatActivity {
         return activeInfo != null && activeInfo.isConnected();
     }
 
-        /* ------------------------------------ XML -----------------------------------------
-    -------------------------------------------------------------------------------------- */
-
     public void loadPage() {
         if (checkServices() && isNetworkAvailable()) {
-            new DownloadXmlTask().execute(URL);
+
+            Log.i(TAG, "network ok ");
+
         } else {
            getResources().getString(R.string.connection_error);
         }
     }
-
-    // passes feed URL, loadXml.. fetches and processes feed. returns result string
-    private class DownloadXmlTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... urls) {
-            try {
-
-                return loadXmlFromNetwork(urls[0]);
-
-            } catch (IOException e) {
-                return getResources().getString(R.string.connection_error);
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
-                return getResources().getString(R.string.xml_error);
-            }
-        }
-       @Override
-        protected void onPostExecute(String result) {
-
-           System.out.println(result + "---");
-        }
-
-    }
-     private String loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException {
-
-            InputStream stream = null;
-
-            XmlParser mXmlParser = new XmlParser();
-            List<Song> songs = null;
-            String number = null;
-            String artist = null;
-            String title = null;
-            String link = null;
-
-            StringBuilder result = new StringBuilder();
-
-            try {
-
-                stream = downloadUrl(urlString);
-                songs = mXmlParser.parse(stream);
-
-            } finally {
-                if (stream != null) {
-                    stream.close();
-                }
-            }
-            for (Song song : songs) {
-                result.append(" \n");
-                result.append(song.getNumber());
-                result.append(" : " + song.getTitle() + " : " + song.getArtist() +" : " +  song.getLink() + "");
-
-            }
-
-         return result.toString();
-
-
-     }
-        //Given a string connection  of a url, sets up a string connection and gets an input stream.
-
-        private InputStream downloadUrl(String urlString) throws IOException {
-
-            System.out.println("Download URL: "+ URL);
-            URL url = new URL(urlString);
-
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-
-            conn.connect();
-            return conn.getInputStream();
-
-        }
-
 
 }
 

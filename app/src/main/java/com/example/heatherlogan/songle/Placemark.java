@@ -13,15 +13,24 @@ public class Placemark {
     private String name;
     private String description;
     private String styleUrl;
-    private LatLng coordinates; // change later
+    private String coordinates;
 
+    public Placemark(){
 
-    public Placemark(String name, String description, String styleUrl, LatLng coordinates) {
+    }
+
+    public Placemark(String name, String description, String styleUrl, String coordinates) {
         this.name = name;
         this.description = description;
         this.styleUrl = styleUrl;
         this.coordinates = coordinates;
 
+    }
+
+    public Placemark(String name, String description, String coordinates) {
+        this.name = name;
+        this.description = description;
+        this.coordinates = coordinates;
     }
 
     public String getName() {
@@ -48,28 +57,12 @@ public class Placemark {
         this.styleUrl = styleUrl;
     }
 
-    public LatLng getCoordinates() {
+    public String getCoordinates() {
         return coordinates;
     }
 
-    public void setCoordinates(LatLng coordinates) {
+    public void setCoordinates(String coordinates) {
         this.coordinates = coordinates;
     }
 
-/*
-    public static class Point {
-        private LatLng coordinates;
-
-        public Point (LatLng coordinates){
-            this.coordinates = coordinates;
-        }
-
-        public LatLng getCoordinates(){
-            return coordinates;
-        }
-
-        public void setCoordinates(LatLng coordinates){
-            this.coordinates = coordinates;
-        }
-    }*/
 }

@@ -7,14 +7,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.heatherlogan.songle.GameActivity"
-    android:background="@color/brightGreen"
+    android:background="@color/white"
     android:paddingTop="40dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/playing_songle"
-        android:textColor="@color/purple"
+        android:textColor="@color/blue"
         android:textSize="50sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -29,7 +29,7 @@
         android:gravity="center"
         android:textSize="25sp"
         android:paddingBottom="20dp"
-        android:textColor="@color/purple"
+        android:textColor="@color/grey"
         android:id="@+id/textView4"/>
 
     <TextView
@@ -39,7 +39,7 @@
         android:text="Steps: 1079"
         android:gravity="center"
         android:textSize="25sp"
-        android:textColor="@color/purple"
+        android:textColor="@color/grey"
         android:id="@+id/textView8"
 
         />
@@ -48,23 +48,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="173dp"
-        android:layout_margin="10dp"
-        android:paddingTop="100dp">
+        android:paddingTop="100dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/textView">
 
         <Button
             android:id="@+id/view_map"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/purple"
+            android:background="@drawable/mybutton"
             android:layout_weight="0.25"
             android:text="@string/vm"
             android:textSize="20sp"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="@color/lightGrey"
             android:layout_margin="10dp"
             />
 
@@ -73,11 +74,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:background="@color/purple"
+            android:background="@drawable/mybutton"
             android:text="@string/view_col"
             android:textSize="20sp"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="@color/lightGrey"
             android:layout_margin="10dp"/>
 
         <Button
@@ -85,23 +86,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:background="@color/purple"
+            android:background="@drawable/mybutton"
             android:text="@string/guess"
             android:textSize="20sp"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="@color/lightGrey"
             android:layout_margin="10dp"/>
 
         <Button
-            android:id="@+id/view_map5"
+            android:id="@+id/getHintBttn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/purple"
+            android:background="@drawable/mybutton"
             android:layout_weight="0.25"
             android:text="Get Hint"
             android:textSize="20sp"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="@color/lightGrey"
             android:layout_margin="10dp"
             />
 
@@ -110,11 +111,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:background="@color/purple"
+            android:background="@drawable/mybutton"
             android:text="Give Up"
             android:textSize="20sp"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="@color/lightGrey"
             android:layout_margin="10dp"/>
 
     </LinearLayout>

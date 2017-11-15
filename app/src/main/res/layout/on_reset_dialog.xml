@@ -3,68 +3,59 @@
               android:orientation="vertical"
               android:background="@drawable/myanalog"
               android:layout_width="match_parent"
-              android:layout_height="250dp"
-              android:padding="10dp"
+              android:layout_height="150dp"
+              android:padding="5dp"
               android:weightSum="1">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/resetheader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Are you sure you want to start a new game?"
-        android:layout_gravity="center"
         android:textColor="@color/blue"
-        android:textSize="25dp"
-        android:layout_marginTop="20dp"
-        android:textAlignment="center"
-        android:layout_weight="0.50"/>
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Previous progress will be lost"
+        android:text="Are you sure you want to reset game?"
         android:layout_gravity="center"
-        android:textColor="@color/blue"
         android:textSize="20dp"
+        android:layout_marginTop="10dp"
         android:textAlignment="center"
-        android:layout_weight="0.50"/>
+        android:layout_weight="0.17"/>
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="70dp"
+        android:layout_below="@id/resetheader"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal"
-        android:padding="20dp"
-        android:layout_gravity="center"
-        android:weightSum="1">
+        android:padding="15dp"
+        >
 
-    <Button
-            android:id="@+id/yesButton"
+        <Button
+            android:textAllCaps="false"
+            android:id="@+id/yx"
             android:textColor="@color/lightGrey"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Yes"
+            android:text="Give Up"
             android:layout_gravity="center"
-            android:textSize="30dp"
-            android:textAllCaps="false"
+            android:textSize="20dp"
             android:background="@drawable/mybutton"
             android:layout_marginRight="5dp"
             android:layout_weight="0.5"/>
 
         <Button
-            android:id="@+id/noButton"
+            android:textAllCaps="false"
+            android:id="@+id/kpBttn"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:text="No"
+            android:text="Keep Playing"
             android:textColor="@color/lightGrey"
             android:layout_marginLeft="10dp"
-            android:textSize="30dp"
-            android:textAllCaps="false"
+            android:textSize="20dp"
             android:layout_gravity="center"
             android:background="@drawable/mybutton"
             android:layout_weight="0.5"/>
 
-    </LinearLayout>
 
+    </LinearLayout>
 
 </LinearLayout>

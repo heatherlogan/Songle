@@ -39,6 +39,8 @@
         </activity>
         <activity android:name=".ViewCollectedWords">
         </activity>
+        <activity android:name=".UnlockedSongsActivity">
+        </activity>
     </application>
 
 </manifest>

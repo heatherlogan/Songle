@@ -13,7 +13,6 @@ public class Song {
         this.artist = artist;
         this.title = title;
         this.link = link;
-
     }
 
     public String getNumber() {

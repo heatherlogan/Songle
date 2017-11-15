@@ -8,6 +8,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import org.apache.commons.io.IOUtils;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,19 +20,21 @@ public class KmlParser {
 
     public static final String ns = null;
 
-    public List<Placemark> parseKml(InputStream in) throws XmlPullParserException, IOException {
+    public List<Placemark> parseKml(String in) throws XmlPullParserException, IOException {
+
+        InputStream stream = IOUtils.toInputStream(in, "UTF-8");
 
         try {
             XmlPullParser kParser = Xml.newPullParser();
 
             kParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            kParser.setInput(in, null);
+            kParser.setInput(stream, null);
             kParser.nextTag();
             return readKmlFeed(kParser);
 
             } finally {
 
-            in.close();
+            stream.close();
         }
     }
 
@@ -62,11 +66,10 @@ public class KmlParser {
 
         parser.require(XmlPullParser.START_TAG, ns, "Placemark");
 
-
         String wordLocation = null;
         String description = null;
         String styleUrl = null;
-        LatLng coordinates = null;
+        String coordinates = null;
 
 
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -90,10 +93,8 @@ public class KmlParser {
         String lineNum = wordLocation.substring(0, wordLocation.indexOf(":"));
         String wordNum = wordLocation.substring(wordLocation.indexOf(":") + 1, wordLocation.length());
 
-
         return new Placemark(wordLocation, description, styleUrl, coordinates);
     }
-
 
     private String readName(XmlPullParser parser) throws XmlPullParserException, IOException {
 
@@ -118,11 +119,29 @@ public class KmlParser {
         return styleUrl;
     }
 
+
+    private String readCoords(XmlPullParser parser) throws IOException, XmlPullParserException{
+
+        parser.require(XmlPullParser.START_TAG, ns, "Point");
+        parser.nextTag();
+
+        String coordinates = readText(parser);
+
+        parser.require(XmlPullParser.END_TAG, ns, "coordinates");
+        parser.nextTag();
+        parser.require(XmlPullParser.END_TAG, ns, "Point");
+        return coordinates;
+    }
+
+
+ /*
     private LatLng readCoords(XmlPullParser parser) throws IOException, XmlPullParserException {
         LatLng coordinates;
 
         parser.require(XmlPullParser.START_TAG, ns, "Point");
         parser.nextTag();
+
+
 
         String[] coordStr = readText(parser).split(",");
         coordinates = new LatLng(Double.parseDouble(coordStr[1]), Double.parseDouble(coordStr[0]));
@@ -133,7 +152,7 @@ public class KmlParser {
         return coordinates;
 
     }
-
+*/
     private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
         String result = "";
         if (parser.next() == XmlPullParser.TEXT) {
@@ -160,8 +179,5 @@ public class KmlParser {
             }
         }
     }
-
-
-
 
 }

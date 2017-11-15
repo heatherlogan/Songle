@@ -10,11 +10,9 @@ import java.io.InputStream;
 
 import android.util.Xml;
 
-
 public class XmlParser {
 
     public static final String ns = null;
-
 
     public List<Song> parse(InputStream in) throws XmlPullParserException, IOException {
         try {
@@ -79,7 +77,6 @@ public class XmlParser {
             }
         }
         return new Song(number, artist, title, link);
-
     }
 
     //readNumber, readArtist, readTitle, returns strings
