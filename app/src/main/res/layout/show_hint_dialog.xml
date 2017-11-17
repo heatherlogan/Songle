@@ -8,11 +8,11 @@
               android:weightSum="1">
 
     <TextView
-        android:id="@+id/giveUpHeader"
+        android:id="@+id/hintTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/blue"
-        android:text=" 'No dark sarcasm in the classroom' "
+        android:text=" show hint "
         android:layout_gravity="center"
         android:textSize="20dp"
         android:paddingBottom="20dp"

@@ -42,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
     private RadioGroup difficultyoptions;
     int difficultyChoice;
 
+    PlacemarkDatasource data;
+    CollectedWordsDatasource word_data;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +57,17 @@ public class MainActivity extends AppCompatActivity {
 
         } else {
             System.out.print("No service");
+        }
+
+        data = new PlacemarkDatasource(this);
+        word_data = new CollectedWordsDatasource(this);
+
+        try {
+            data.open();
+            word_data.open();
+
+        } catch (Exception e ){
+            Log.e(TAG, "DATABASE EXCEPTION");
         }
     }
 
@@ -121,8 +135,10 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View view){
 
-                                Toast toast = Toast.makeText(MainActivity.this, "map" + difficultyChoice, Toast.LENGTH_LONG);
-                                toast.show();
+                                //clear previous marker and collected words database on new game
+                                Log.i(TAG, "cleared database");
+                                data.clearDatabase("markers");
+                                word_data.clearDatabase("collected_words");
 
                                 Intent intent = new Intent(MainActivity.this, GameActivity.class);
                                 intent.putExtra("mapNo", difficultyChoice);

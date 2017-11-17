@@ -21,39 +21,52 @@
         android:layout_weight="0.17"/>
 
     <TextView
-    android:id="@+id/correctSongInfo"
+    android:id="@+id/displaySong"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_marginTop="5dp"
     android:layout_weight="0.17"
     android:lineSpacingExtra="5dp"
-    android:text="Song: Another Brick In The Wall\n By: Pink Floyd"
+    android:text="display song"
     android:textAlignment="center"
     android:textColor="@color/grey"
     android:textSize="20sp"/>
+
     <TextView
-        android:id="@+id/songlink"
+        android:id="@+id/displayArtist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="0.17"
+        android:layout_marginTop="5dp"
+        android:lineSpacingExtra="5dp"
+        android:text="display artist"
+        android:textAlignment="center"
+        android:textColor="@color/grey"
+        android:textSize="20sp"/>
+    <TextView
+        android:id="@+id/displaySongLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:lineSpacingExtra="5dp"
+        android:layout_weight="0.17"
         android:autoLink="all"
         android:clickable="true"
         android:textColorLink="@color/blue"
-        android:text="https://youtu.be/HrxX9TBj2zY "
+        android:layout_marginTop="5dp"
+        android:text=" display link "
         android:textAlignment="center"
         android:textColor="@color/grey"
         android:textSize="20sp"
         />
 
     <TextView
-        android:id="@+id/giveUpHeader"
+        android:id="@+id/completedGameStats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/grey"
         android:text="You completed the game in 1 hr 2 mins and took 1034 steps!"
-        android:lineSpacingExtra="5dp"
         android:layout_gravity="center"
         android:textSize="20dp"
         android:layout_marginTop="10dp"

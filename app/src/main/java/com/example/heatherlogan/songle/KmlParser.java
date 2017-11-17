@@ -134,25 +134,6 @@ public class KmlParser {
     }
 
 
- /*
-    private LatLng readCoords(XmlPullParser parser) throws IOException, XmlPullParserException {
-        LatLng coordinates;
-
-        parser.require(XmlPullParser.START_TAG, ns, "Point");
-        parser.nextTag();
-
-
-
-        String[] coordStr = readText(parser).split(",");
-        coordinates = new LatLng(Double.parseDouble(coordStr[1]), Double.parseDouble(coordStr[0]));
-
-        parser.require(XmlPullParser.END_TAG, ns, "coordinates");
-        parser.nextTag();
-        parser.require(XmlPullParser.END_TAG, ns, "Point");
-        return coordinates;
-
-    }
-*/
     private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
         String result = "";
         if (parser.next() == XmlPullParser.TEXT) {

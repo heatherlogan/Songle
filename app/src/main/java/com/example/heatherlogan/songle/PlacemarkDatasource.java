@@ -41,14 +41,14 @@ public class PlacemarkDatasource {
         cv.put(MySQLiteHelper.SNIPPET, placemark.getDescription());
         cv.put(MySQLiteHelper.POSITION, placemark.getCoordinates());
 
-        db.insert(MySQLiteHelper.TABLE_NAME, null, cv);
+        db.insert(MySQLiteHelper.MARKERS_TABLE, null, cv);
     }
 
     public List<Placemark> getMarkers(){
 
         List<Placemark> markers = new ArrayList<>();
 
-        Cursor cursor = db.query(MySQLiteHelper.TABLE_NAME, cols, null, null, null, null, null );
+        Cursor cursor = db.query(MySQLiteHelper.MARKERS_TABLE, cols, null, null, null, null, null );
 
         cursor.moveToFirst();
 
@@ -69,20 +69,17 @@ public class PlacemarkDatasource {
         p.setName(cursor.getString(0));
         p.setDescription(cursor.getString(1));
         p.setCoordinates(cursor.getString(2));
-
-
-        /* convert coordintes string to latlng
-        String po = cursor.getString(2);
-        String pos =  po.substring(po.indexOf("(")+1,po.indexOf(")"));
-        String [] posSplit = pos.split(",");
-        double latitude = Double.valueOf(posSplit[0]);
-        double longitude = Double.valueOf(posSplit[1]);
-        LatLng realPosition = new LatLng(latitude, longitude);*/
-
-
-
         return p;
 
+    }
+
+    public void deleteMarker(Placemark p){
+        db.delete(MySQLiteHelper.MARKERS_TABLE, MySQLiteHelper.POSITION + " = '" + p.getCoordinates()  + "'", null) ;
+    }
+
+    public void clearDatabase(String TABLE_NAME){
+        String clearDB = "DELETE FROM " + TABLE_NAME;
+        db.execSQL(clearDB);
     }
 
 

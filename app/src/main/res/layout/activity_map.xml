@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.heatherlogan.songle.MapActivity">
 
-
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:id="@+id/google_map"
@@ -18,6 +17,31 @@
               tools:context=".MapsActivity"/>
 
     <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="80dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+        <Button
+            android:id="@+id/backHomeMap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginRight="5dp"
+            android:layout_weight="0.5"
+            android:background="@drawable/mybutton"
+            android:padding="5dp"
+            android:text="Back "
+            android:textAllCaps="false"
+            android:textColor="@color/lightGrey"
+            android:textSize="15dp"/>
+    </LinearLayout>
+
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_alignParentBottom="true"
@@ -25,7 +49,7 @@
         android:padding="15dp">
 
         <Button
-            android:id="@+id/yesButton"
+            android:id="@+id/viewWordsFromMap"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -39,7 +63,7 @@
             android:textSize="15dp"/>
 
         <Button
-            android:id="@+id/noButton"
+            android:id="@+id/guessSongFromMap"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
@@ -54,4 +78,4 @@
 
     </LinearLayout>
 
-    </RelativeLayout>
+</RelativeLayout>

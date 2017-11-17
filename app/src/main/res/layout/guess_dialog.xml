@@ -29,6 +29,7 @@
         android:hint="Enter Song Title"
         android:background="#EEEEEE"
         android:textColorHint="@color/blue"
+        android:textColor="@color/grey"
         android:ems="10"
         android:inputType="text"
 

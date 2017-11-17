@@ -1,6 +1,7 @@
 package com.example.heatherlogan.songle;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -17,9 +18,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.graphics.Color;
 
-import java.io.FileNotFoundException;
+import java.text.NumberFormat;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -28,6 +33,7 @@ import java.net.URL;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -40,6 +46,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -52,6 +59,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 
 import org.xmlpull.v1.XmlPullParserException;
 import org.apache.commons.io.IOUtils;
@@ -68,14 +77,17 @@ public class MapActivity
     private Location mLastLocation;
 
     PlacemarkDatasource data;
+    CollectedWordsDatasource word_data;
 
     private static final String TAG = "Maps Activity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    public static final float DEFAULT_ZOOM = 19.0f;
+
+
 
     private Marker currentLocationMarker;
-
-    public static final String lyricURL = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/15/words.txt";
+    private Circle collectableRadius;
 
     public ArrayList<WordInfo> collectedWords = new ArrayList<>();
 
@@ -88,25 +100,14 @@ public class MapActivity
         mapFragment.getMapAsync(this);
 
         data = new PlacemarkDatasource(this);
+        word_data = new CollectedWordsDatasource(this);
 
         try {
             data.open();
+            word_data.open();
 
         } catch (Exception e ){
             Log.e(TAG, "DATABASE EXCEPTION");
-        }
-
-
-       data.addMarker(new Placemark("7:3", "notboring", "-3.188857391507885,55.94380480880355"));
-
-        List<Placemark> m = data.getMarkers();
-
-        for (int i = 0 ; i < m.size() ; i++){
-
-             gMap.addMarker(new MarkerOptions()
-                            .title(m.get(i).getName())
-                            .snippet(m.get(i).getDescription())
-                            .position(stringToLatLng(m.get(i).getCoordinates())));
         }
 
         if (mGoogleApiClient == null) {
@@ -116,18 +117,17 @@ public class MapActivity
                     .addApi(LocationServices.API)
                     .build();
         }
-    }
 
-    public LatLng stringToLatLng(String str){
+        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = mPreferences.edit();
+        String lyricURL = mPreferences.getString("lyricUrl_key","");
 
-        String pos =  str.substring(0, str.length()-2);
-        String [] posSplit = pos.split(",");
+        Log.i(TAG, "Got lyric URL from Shared Preferences");
 
-        double longitude = Double.valueOf(posSplit[0]);
-        double latitude = Double.valueOf(posSplit[1]);
+        // buttons
 
-        LatLng realPosition = new LatLng(latitude, longitude);
-        return realPosition;
+        goBackToGame();
+        openCollectedWords();
     }
 
     @Override
@@ -148,13 +148,18 @@ public class MapActivity
     public void onMapReady(GoogleMap googleMap) {
 
         gMap = googleMap;
-       // setOnCickMarker();
+
+
+        Log.i(TAG, "Adding Markers");
+        addMarkers();
+        setOnClickMarker();
 
         try {
             gMap.setMyLocationEnabled(true);
 
         } catch (SecurityException se) {
-            System.out.println("Security exception thrown[onMapReady]");
+            se.printStackTrace();
+            Log.e(TAG, "Security exception thrown[onMapReady]");
         }
         gMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
@@ -199,10 +204,13 @@ public class MapActivity
 
             LatLng currentLo = new LatLng(lat, lon);
 
-            gMap.addMarker(new MarkerOptions().position(currentLo).title("Your Location")
+            currentLocationMarker = gMap.addMarker(new MarkerOptions().position(currentLo).title("Your Location")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 
-            moveCamera(currentLo, 17.0f);
+            collectableRadius = gMap.addCircle(new CircleOptions().center(currentLo)
+                                .radius(40).strokeColor(Color.CYAN));
+
+            moveCamera(currentLo, DEFAULT_ZOOM);
 
         } else {
             ActivityCompat.requestPermissions(this,
@@ -211,7 +219,6 @@ public class MapActivity
             Log.e(TAG, "Permission not granted");
         }
     }
-
     @Override
     public void onLocationChanged(Location current) {
 
@@ -224,14 +231,28 @@ public class MapActivity
                     String.valueOf(current.getLatitude()) + "," + String.valueOf(current.getLongitude()) + ")");
 
             LatLng lastLocationCoords = new LatLng(current.getLatitude(), current.getLongitude());
-            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastLocationCoords, 15.0f));
+
+
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastLocationCoords, DEFAULT_ZOOM));
+
 
             if (currentLocationMarker != null) {
                 currentLocationMarker.remove();
+
             }
+            if (collectableRadius != null){
+                collectableRadius.remove();
+            }
+
             currentLocationMarker = gMap.addMarker(new MarkerOptions()
                     .position(lastLocationCoords)
-                    .title("Your Location")); //Edit marker options here
+                    .title("Your Location")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+
+            collectableRadius = gMap.addCircle(new CircleOptions()
+                    .center(lastLocationCoords)
+                    .radius(40).strokeColor(Color.CYAN));
+
         }
     }
 
@@ -247,86 +268,133 @@ public class MapActivity
 
     /*---------------------------------------------------- Markers ----------------------------------------------------- */
 
+     protected void addMarkers() {
 
+         List<Placemark> m = data.getMarkers();
 
+         for (int i = 0 ; i < m.size() ; i++){
 
+             String coords = m.get(i).getCoordinates();
+             String removeZero = coords.substring(0, coords.length()-2);
+             String[] slatlng =  removeZero.split(",");
 
+             try {
 
-     /*   protected void addMarkers(List<Placemark> placemarks) {
-            Log.v(TAG, "Adding Markers to map");
+                 NumberFormat nf = NumberFormat.getInstance();
+                 double lat = nf.parse(slatlng[1]).doubleValue();
+                 double lon = nf.parse(slatlng[0]).doubleValue();
 
-            for (Placemark placemark : placemarks) {
+                 LatLng latlng = new LatLng(lat, lon);
 
-                switch (placemark.getStyleUrl()) {
+                    switch (m.get(i).getDescription()) {
 
-                    case "#unclassified":
+                        case "unclassified":
+                            gMap.addMarker(new MarkerOptions()
+                                    .position(latlng)
+                                    .title(m.get(i).getName())
+                                    .snippet(m.get(i).getDescription())
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.unclassifiedmarker)));
+                            break;
 
-                        gMap.addMarker(new MarkerOptions()
-                                .position(placemark.getCoordinates())
-                                .title(placemark.getName())
-                                .snippet(placemark.getDescription()));
-                        break;
+                        case "boring":
+                            gMap.addMarker(new MarkerOptions()
+                                    .position(latlng)
+                                    .title(m.get(i).getName())
+                                    .snippet(m.get(i).getDescription())
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.boringmarker)));
+                            break;
 
-                    case "#boring":
+                        case "notboring":
+                            gMap.addMarker(new MarkerOptions()
+                                    .position(latlng)
+                                    .title(m.get(i).getName())
+                                    .snippet(m.get(i).getDescription())
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.notboringmarker)));
+                            break;
+                        case "interesting":
 
-                        gMap.addMarker(new MarkerOptions()
-                                .position(placemark.getCoordinates())
-                                .title(placemark.getName())
-                                .snippet(placemark.getDescription())
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.boringmarker)));
-                        break;
+                            gMap.addMarker(new MarkerOptions()
+                                    .position(latlng)
+                                    .title(m.get(i).getName())
+                                    .snippet(m.get(i).getDescription())
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.interestingmarker)));
+                            break;
+                        case "veryinteresting":
 
-                    case "#notboring":
+                            gMap.addMarker(new MarkerOptions()
+                                    .position(latlng)
+                                    .title(m.get(i).getName())
+                                    .snippet(m.get(i).getDescription())
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.veryinterestingmarker)));
+                            break;
+                    }
 
-                        gMap.addMarker(new MarkerOptions()
-                                .position(placemark.getCoordinates())
-                                .title(placemark.getName())
-                                .snippet(placemark.getDescription())
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.notboringmarker)));
-                        break;
-
-                    case "#interesting":
-
-                        gMap.addMarker(new MarkerOptions()
-                                .position(placemark.getCoordinates())
-                                .title(placemark.getName())
-                                .snippet(placemark.getDescription())
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.interestingmarker)));
-                        break;
-
-                    case "#veryinteresting":
-
-                        gMap.addMarker(new MarkerOptions()
-                                .position(placemark.getCoordinates())
-                                .title(placemark.getName())
-                                .snippet(placemark.getDescription())
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.veryinterestingmarker)));
-                        break;
-                }
+                 } catch (ParseException e) {
+                 e.printStackTrace();
+                 }
             }
-        }
 
-    // when marker is clicked
-    private void setOnCickMarker() {
+             /* Testing purposes */
+
+         }
+
+    // when clicked, marker is remove marker from map and database, corresponding word displayed and added to Collected words database.
+    private void setOnClickMarker() {
 
         gMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 
             @Override
             public boolean onMarkerClick(Marker m) {
 
-                // add radius to collect
-                // add to database
+                float[]distance = new float[2];
 
-                String position = m.getTitle();
-                TaskParameters params = new TaskParameters(lyricURL, position);
-                new FindWordInLyrics().execute(params);
+                Location.distanceBetween(m.getPosition().latitude, m.getPosition().longitude,
+                        collectableRadius.getCenter().latitude, collectableRadius.getCenter().longitude, distance);
 
-                m.remove();
+                // checks whether clicked marker is within the radius.
 
+                if (distance[0] > collectableRadius.getRadius()){
+
+                    Toast.makeText(getBaseContext(), "You are too far away to collect this word!", Toast.LENGTH_LONG).show();
+
+                } else {
+
+                    if (m.getId().equals(currentLocationMarker.getId())) {
+
+                        return false;
+
+                    } else {
+                        // for matching marker to word in lyrics
+
+                        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(MapActivity.this);
+                        SharedPreferences.Editor editor = mPreferences.edit();
+                        String lyricURL = mPreferences.getString("lyricUrl_key", "");
+
+                        String position = m.getTitle();
+                        TaskParameters params = new TaskParameters(lyricURL, position);
+
+                        new FindWordInLyrics().execute(params);
+
+                        m.remove();
+                        data.deleteMarker(new Placemark(m.getTitle(), m.getSnippet(), m.getPosition().longitude + "," + m.getPosition().latitude + ",0"));
+
+                        // for testing
+                        List<Placemark> pms = data.getMarkers();
+                        StringBuilder result = new StringBuilder();
+
+                        int count = 0;
+                        for (Placemark placemark : pms) {
+                            count++;
+                            // result.append(" \n");
+                            // result.append(" : " + placemark.getName() + " : " + placemark.getCoordinates());
+                        }
+                        System.out.println("Number of markers: " + count);
+                    }
+                }
                 return false;
             }
         });
-    }*/
+    }
 
     /*------------------------------------------ Lyric Parsing ---------------------------------------------*/
 
@@ -359,6 +427,7 @@ public class MapActivity
                 return null;
             }
         }
+
         @Override
         protected void onPostExecute(WordInfo result) {
 
@@ -384,28 +453,35 @@ public class MapActivity
                 }
             }, 2000);
 
-            // add to arraylist of collected words
-            addToCollectedWords(result);
+            // add to database of collected words
 
+            addToCollectedWords(result);
         }
 
         private WordInfo getWord(String url, String position) throws IOException {
 
             InputStream is = null;
-            String foundWord = null;
+            String foundWord = "";
+
+
+            SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(MapActivity.this);
+            SharedPreferences.Editor editor = mPreferences.edit();
+            String lyricURL = mPreferences.getString("lyricUrl_key","");
+
+            Log.i(TAG, "got lyricURL from SharedPref"+lyricURL);
 
             String[] parts = position.split(":");
             int lineNo = Integer.parseInt(parts[0]);
             int posNo = Integer.parseInt(parts[1]);
 
-            System.out.println("line: " + lineNo + "position: " + posNo);
-
             StringBuilder l = new StringBuilder();
 
             //download lyric url
             try {
-                is = downloadLyricUrl(url);
+                is = downloadLyricUrl(lyricURL);
                 int counter = 0;
+
+                System.out.println(lyricURL);
 
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line;
@@ -415,8 +491,6 @@ public class MapActivity
                 while ((line = br.readLine()) != null) {
                     counter++;
                     if (counter == lineNo) {
-                        System.out.println("Line: " + line);
-
                         //remove leading whitespaces and numbers from lines
                         String line2 = line.replaceAll("[0-9]", "").trim();
 
@@ -425,6 +499,7 @@ public class MapActivity
                         foundWord = wordArray[posNo - 1];
                     }
                 }
+
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             } catch (Exception e) {
@@ -436,14 +511,14 @@ public class MapActivity
             String w = result.getWord();
             int lz = result.getLine();
             int p = result.getPos();
-            System.out.println("word: " + w + "\nline: " + lz + "\npos: " + p);
+            System.out.println("word: " + w + " line: " + lz + " pos: " + p);
 
             return result;
         }
+
     }
     private InputStream downloadLyricUrl(String urlString) throws IOException {
 
-        System.out.println("Download Lyric URL: " + lyricURL);
         URL url = new URL(urlString);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -454,25 +529,37 @@ public class MapActivity
 
         conn.connect();
         return conn.getInputStream();
-
     }
-
-
-    /*--------------------------------------Add to Collected Words---------------------------------------*/
-
     // adds words to collected words list and displays them in list view
 
     public void addToCollectedWords(WordInfo object){
-
-        collectedWords.add(object);
-
-        System.out.println();
-        for (WordInfo word : collectedWords){
-            System.out.println(word.getWord() + " " + word.getLine() + ":" + word.getPos());
-        }
-
+        word_data.addCollectedWord(object);
     }
 
+
+    /*--------------------------------------Buttons---------------------------------------*/
+
+    private void goBackToGame() {
+        Button back = findViewById(R.id.backHomeMap);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                MapActivity.super.onBackPressed();
+            }
+        });
+    }
+
+    private void openCollectedWords(){
+        Button view_collected_words = (Button) findViewById(R.id.viewWordsFromMap);
+        view_collected_words.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent gotocollectedwords = new Intent(MapActivity.this, ViewCollectedWords.class);
+                startActivity(gotocollectedwords);
+            }
+        });
+    }
 
 }
 
