@@ -167,6 +167,7 @@ public class GameActivity extends AppCompatActivity {
                                     m2Builder.setView(m2View);
                                     AlertDialog dialog2 = m2Builder.create();
                                     dialog2.show();
+
                                 }
                             });
                             m4Builder.setView(m4View);
@@ -227,6 +228,10 @@ public class GameActivity extends AppCompatActivity {
             public void onClick(View view) {
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
                 View mView = getLayoutInflater().inflate(R.layout.request_hint, null);
+
+
+                // if statement to see if steps > 2000 and
+
 
                 Button getHintYes = mView.findViewById(R.id.getHintYes);
                 getHintYes.setOnClickListener(new View.OnClickListener() {
@@ -447,7 +452,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
 
-    /* ----------------------------------------------- KML ----------------------------------------------*/
+    /* --------------------------------------------- KML ------------------------------------------------------*/
     private class DownloadKmlTask extends AsyncTask<String, Void, List<Placemark>> {
 
         @Override
@@ -522,7 +527,7 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
-    /*-------------------------------------- GUESS SONG --------------------------------------------------*/
+    /*------------------------------------------- GUESS SONG --------------------------------------------------*/
 
     public Song getSongInPlay() {
 
@@ -571,7 +576,7 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    /* ----------------------------------------------- GET HINT ----------------------------------------------*/
+    /* ------------------------------------------- GET HINT ----------------------------------------------------*/
 
 
     private class GetHint extends AsyncTask<String, Void, String> {
