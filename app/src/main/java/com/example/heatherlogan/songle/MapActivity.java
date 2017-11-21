@@ -536,8 +536,7 @@ public class MapActivity
 
         word_data.addCollectedWord(object);
     }
-
-
+    
     /*--------------------------------------Buttons---------------------------------------*/
 
     private void goBackToGame() {

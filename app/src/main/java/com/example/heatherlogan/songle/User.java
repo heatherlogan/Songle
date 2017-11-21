@@ -4,10 +4,10 @@ public class User {
 
     private String name;
     private String level;
-    private String time;
+    private long time;
     private int steps;
 
-    public User (String name, String level, String time, int steps){
+    public User (String name, String level, long time, int steps){
         this.name = name;
         this.level = level;
         this.time = time;
@@ -30,11 +30,11 @@ public class User {
         this.level = level;
     }
 
-    public String getUserTime() {
+    public long getUserTime() {
         return time;
     }
 
-    public void setUserTime(String time) {
+    public void setUserTime(long time) {
         this.time = time;
     }
 

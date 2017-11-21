@@ -3,7 +3,7 @@
               android:orientation="vertical"
               android:background="@drawable/myanalog"
               android:layout_width="match_parent"
-              android:layout_height="250dp"
+              android:layout_height="260dp"
               android:padding="5dp"
               android:weightSum="1">
 
@@ -15,7 +15,7 @@
         android:layout_marginTop="20dp"
         android:layout_weight="0.17"
         android:textColor="@color/grey"
-        android:text="Your guess was incorrect. \nTry Again?"
+        android:text="Your guess was incorrect. Try Again?"
         android:textAlignment="center"
         android:paddingBottom="10dp"
         android:textSize="30dp"/>
@@ -23,7 +23,7 @@
 
     <EditText
         android:layout_margin="10dp"
-        android:id="@+id/songGuessEnter2"
+        android:id="@+id/songGuess2"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@id/guessHeader"
@@ -39,10 +39,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:layout_below="@id/songGuessEnter"
+        android:layout_below="@id/songGuess2"
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
         android:padding="10dp"
+        android:paddingBottom="10dp"
         >
 
 

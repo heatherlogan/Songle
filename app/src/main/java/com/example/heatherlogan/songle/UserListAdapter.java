@@ -28,7 +28,7 @@ public class UserListAdapter extends ArrayAdapter<User> {
 
         String name = getItem(position).getUserName();
         String level = getItem(position).getUserLevel();
-        String time = getItem(position).getUserTime();
+        long time = getItem(position).getUserTime();
         int steps = getItem(position).getUserSteps();
 
         User u = new User(name, level, time, steps);
@@ -43,7 +43,7 @@ public class UserListAdapter extends ArrayAdapter<User> {
 
         tvName.setText(name);
         tvLevel.setText(level);
-        tvTime.setText((time));
+        tvTime.setText(Long.toString(time));
         tvSteps.setText(Integer.toString(steps));
 
         return convertView;

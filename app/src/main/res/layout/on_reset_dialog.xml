@@ -3,7 +3,7 @@
               android:orientation="vertical"
               android:background="@drawable/myanalog"
               android:layout_width="match_parent"
-              android:layout_height="150dp"
+              android:layout_height="200dp"
               android:padding="5dp"
               android:weightSum="1">
 
@@ -12,7 +12,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/blue"
-        android:text="Are you sure you want to reset game?"
+        android:text="Resetting game will clear all data including high scores and previously played songs.
+Are you sure you want to reset game?"
         android:layout_gravity="center"
         android:textSize="20dp"
         android:layout_marginTop="10dp"
@@ -35,7 +36,7 @@
             android:textColor="@color/lightGrey"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Give Up"
+            android:text="Yes"
             android:layout_gravity="center"
             android:textSize="20dp"
             android:background="@drawable/mybutton"
@@ -47,7 +48,7 @@
             android:id="@+id/kpBttn"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:text="Keep Playing"
+            android:text="No"
             android:textColor="@color/lightGrey"
             android:layout_marginLeft="10dp"
             android:textSize="20dp"

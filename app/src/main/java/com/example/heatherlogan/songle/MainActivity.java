@@ -39,11 +39,6 @@ public class MainActivity extends AppCompatActivity {
     public final String TAG = "MainActivity";
     public static final String WIFI = "Wi-fi";
 
-
-
-
-
-
     private RadioGroup difficultyoptions;
     int difficultyChoice;
 
@@ -98,6 +93,12 @@ public class MainActivity extends AppCompatActivity {
                 View mView = getLayoutInflater().inflate(R.layout.new_game_dialog, null);
 
                 Button yesButton = (Button) mView.findViewById(R.id.yesButton);
+                Button noButton = (Button) mView.findViewById(R.id.noButton);
+
+                mBuilder.setView(mView);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
+
                 yesButton.setOnClickListener(new View.OnClickListener(){
 
                     // Choosing to start a new game brings up dialog to choose difficulty level
@@ -107,6 +108,11 @@ public class MainActivity extends AppCompatActivity {
                         View m2View = getLayoutInflater().inflate(R.layout.select_difficulty_dialog, null);
 
                         difficultyoptions = (RadioGroup) m2View.findViewById(R.id.rg);
+                        Button playButton7 = (Button) m2View.findViewById(R.id.playButton7);
+
+                        m2Builder.setView(m2View);
+                        final AlertDialog dialog2 = m2Builder.create();
+                        dialog2.show();
 
                         difficultyoptions.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                             @Override
@@ -134,8 +140,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         //Enter button in Select Difficulty Level launches new game
-
-                        Button playButton7 = (Button) m2View.findViewById(R.id.playButton7);
                         playButton7.setOnClickListener(new View.OnClickListener(){
                             @Override
                             public void onClick(View view){
@@ -145,32 +149,31 @@ public class MainActivity extends AppCompatActivity {
                                 data.clearDatabase("markers");
                                 word_data.clearDatabase("collected_words");
 
-                                Intent intent = new Intent(MainActivity.this, GameActivity.class);
-                                intent.putExtra("mapNo", difficultyChoice);
-                                startActivity(intent);
+                                if (difficultyoptions.getCheckedRadioButtonId() == -1) {
 
-                                // add timer?
+                                    Toast.makeText(MainActivity.this, "Please Select Difficulty", Toast.LENGTH_LONG).show();
 
+                                } else {
 
+                                    Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                                    intent.putExtra("mapNo", difficultyChoice);
+                                    startActivity(intent);
+
+                                    dialog2.dismiss();
+
+                                }
                             }
                         });
-                        m2Builder.setView(m2View);
-                        final AlertDialog dialog2 = m2Builder.create();
-                        dialog2.show();
+                        dialog.dismiss();
                     }
                 });
-                Button noButton = (Button) mView.findViewById(R.id.noButton);
                 noButton.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view){
-                        Intent stayOnPage = new Intent(MainActivity.this, MainActivity.class);
-                        startActivity(stayOnPage);
+                        dialog.dismiss();
                     }
                 });
 
-                mBuilder.setView(mView);
-                final AlertDialog dialog = mBuilder.create();
-                dialog.show();
 
             }
         });
