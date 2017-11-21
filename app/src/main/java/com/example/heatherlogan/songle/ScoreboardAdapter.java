@@ -10,13 +10,13 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class UserListAdapter extends ArrayAdapter<User> {
+public class ScoreboardAdapter extends ArrayAdapter<User> {
 
-    private static final String TAG = "UserListAdapter";
+    private static final String TAG = "Scoreboard Adapter";
     private Context mContext;
     private int mResource;
 
-    public UserListAdapter(Context context, int resource, ArrayList<User> users) {
+    public ScoreboardAdapter(Context context, int resource, ArrayList<User> users) {
 
         super(context, resource, users);
         mContext = context;
@@ -28,10 +28,9 @@ public class UserListAdapter extends ArrayAdapter<User> {
 
         String name = getItem(position).getUserName();
         String level = getItem(position).getUserLevel();
-        long time = getItem(position).getUserTime();
-        int steps = getItem(position).getUserSteps();
+        int time = getItem(position).getUserTime();
 
-        User u = new User(name, level, time, steps);
+        User u = new User(name, level, time);
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
@@ -39,12 +38,11 @@ public class UserListAdapter extends ArrayAdapter<User> {
         TextView tvName = (TextView) convertView.findViewById(R.id.nameTextView);
         TextView tvLevel = (TextView) convertView.findViewById(R.id.levelTextView);
         TextView tvTime = (TextView) convertView.findViewById(R.id.timeTextView);
-        TextView tvSteps = (TextView) convertView.findViewById(R.id.stepsTextView);
 
         tvName.setText(name);
         tvLevel.setText(level);
-        tvTime.setText(Long.toString(time));
-        tvSteps.setText(Integer.toString(steps));
+        tvTime.setText(Integer.toString(time));
+
 
         return convertView;
 

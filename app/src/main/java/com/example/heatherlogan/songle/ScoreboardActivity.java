@@ -2,13 +2,18 @@ package com.example.heatherlogan.songle;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ScoreboardActivity extends AppCompatActivity {
+
+    ScoreboardDatasource scoreboard_data;
+    private static final String TAG = "Scoreboard Activity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,18 +21,34 @@ public class ScoreboardActivity extends AppCompatActivity {
         setContentView(R.layout.scoreboard);
         ListView mListView = (ListView) findViewById(R.id.scoreboardListView);
 
-        //Song word objects
+        scoreboard_data = new ScoreboardDatasource(this);
 
-        User u1 = new User("John", "Medium", 1313 , 830 );
-        User u2 = new User("Karen", "Very Easy", 3443, 2001 );
+        try {
+            scoreboard_data.open();
+        } catch (Exception e){
+            Log.e(TAG, "DATABASE EXCEPTION");
+        }
 
-        ArrayList<User> users = new ArrayList<>();
+        List<User> scoreboard_users = scoreboard_data.getScoreboard();
 
-        users.add(u1);
-        users.add(u2);
+        ArrayList<User> scoreboard_array = new ArrayList<User>(scoreboard_users);
+        // add comparator
 
-        UserListAdapter adapter = new UserListAdapter(this, R.layout.scoreboard_adapter_layout, users);
+        ScoreboardAdapter adapter = new ScoreboardAdapter(
+                this, R.layout.scoreboard_adapter_layout, scoreboard_array);
         mListView.setAdapter(adapter);
+
+        //testing
+
+        StringBuilder r = new StringBuilder();
+        int count = 0;
+        for (User u : scoreboard_users ) {
+            count ++;
+            r.append(" \n");
+            r.append(" : " + u.getUserName() + " : " + u.getUserTime() +"," + u.getUserLevel());
+        }
+        System.out.println(r.toString());
+        System.out.println("Number of collectedWords: " + count);
 
         goBack();
     }
@@ -39,7 +60,6 @@ public class ScoreboardActivity extends AppCompatActivity {
         goback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 ScoreboardActivity.super.onBackPressed();
             }
         });

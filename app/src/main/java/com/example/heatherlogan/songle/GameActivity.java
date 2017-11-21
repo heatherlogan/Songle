@@ -63,6 +63,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     private Boolean deviceHasStepCounter = false;
 
     PlacemarkDatasource data;
+    ScoreboardDatasource scoreboard_data;
 
     private SharedPreferences mPreferences;
     private SharedPreferences.Editor mEditor;
@@ -97,9 +98,12 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         // database
         data = new PlacemarkDatasource(this);
+        scoreboard_data = new ScoreboardDatasource(this);
+
 
         try {
             data.open();
+            scoreboard_data.open();
 
         } catch (Exception e) {
             Log.e(TAG, "DATABASE EXCEPTION");
@@ -796,7 +800,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
     public void handleCorrectGuess(){
 
-        long timeToComplete = SystemClock.elapsedRealtime() - mChronometer.getBase();
+        final long timeToComplete = SystemClock.elapsedRealtime() - mChronometer.getBase();
         onStopTimer();
         String timeString = "You completed game in " + formatTime(timeToComplete);
 
@@ -820,7 +824,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onClick(View view) {
 
-             addToScoreBoard();
+             addToScoreBoard(timeToComplete);
             }
         });
         m4Builder.setView(m4View);
@@ -870,22 +874,70 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         });
     }
 
-    public void addToScoreBoard(){
+    public void addToScoreBoard(long timeToComplete){
+
+        final int time = (int) timeToComplete;
 
         AlertDialog.Builder m2Builder = new AlertDialog.Builder(GameActivity.this);
         View m2View = getLayoutInflater().inflate(R.layout.enter_name_dialog, null);
 
+            final EditText userName = (EditText) m2View.findViewById(R.id.enterNameET);
+            Button  enter = (Button) m2View.findViewById(R.id.enterNameBttn);
+
+            Intent intent = getIntent();
+            final int mapNo = intent.getIntExtra("mapNo", 0);
+
+
         m2Builder.setView(m2View);
-        AlertDialog dialog2 = m2Builder.create();
+        final AlertDialog dialog2 = m2Builder.create();
         dialog2.show();
 
+        enter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String name = userName.getText().toString();
+                String level = mapToStringDifficulty(mapNo);
+                int time1 = time;
+                int steps = 0;
+
+                User user = new User(name, level, time1);
+
+                System.out.println(user.getUserName() +"  "+ user.getUserLevel()+"  "+  user.getUserTime());
+
+                Log.i(TAG, "adding to scoreboard");
+
+                scoreboard_data.addToScoreboard(user);
+
+                Intent i = new Intent(GameActivity.this, ScoreboardActivity.class);
+                startActivity(i);
 
 
-
-
+            }
+        });
     }
 
+    public String mapToStringDifficulty(int n){
 
+        String difficulty = null;
+
+        switch (n){
+
+            case 1 : difficulty = "Very Hard";
+                break;
+            case 2 : difficulty = "Hard";
+                break;
+            case 3 : difficulty = "Medium";
+                break;
+            case 4 : difficulty = "Easy";
+                break;
+            case 5 : difficulty = "Very Easy";
+                break;
+            default: difficulty = "Medium";
+                break;
+        }
+        return difficulty;
+    }
 
 
 }

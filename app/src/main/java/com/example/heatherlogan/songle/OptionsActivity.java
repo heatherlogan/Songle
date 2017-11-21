@@ -17,8 +17,6 @@ public class OptionsActivity extends AppCompatActivity {
         openHowToPlay();
         openUnlockedSongs();
     }
-
-
     private void openHowToPlay(){
         Button howtoplayBttn = findViewById(R.id.howtoplayBttn);
         howtoplayBttn.setOnClickListener(new View.OnClickListener(){

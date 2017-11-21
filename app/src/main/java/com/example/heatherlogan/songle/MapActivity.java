@@ -82,9 +82,7 @@ public class MapActivity
     private static final String TAG = "Maps Activity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    public static final float DEFAULT_ZOOM = 7.0f;
-
-
+    public static final float DEFAULT_ZOOM = 18.0f;
 
     private Marker currentLocationMarker;
     private Circle collectableRadius;
@@ -536,7 +534,7 @@ public class MapActivity
 
         word_data.addCollectedWord(object);
     }
-    
+
     /*--------------------------------------Buttons---------------------------------------*/
 
     private void goBackToGame() {
