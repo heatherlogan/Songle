@@ -62,11 +62,22 @@
         />
 
     <TextView
-        android:id="@+id/completedGameStats"
+        android:id="@+id/completedGameTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/grey"
-        android:text="You completed the game in 1 hr 2 mins and took 1034 steps!"
+        android:textColor="@color/blue"
+        android:text="time to complete"
+        android:layout_gravity="center"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:textAlignment="center"
+        android:layout_weight="0.17"/>
+    <TextView
+        android:id="@+id/completedGameSteps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue"
+        android:text="steps to complete"
         android:layout_gravity="center"
         android:textSize="20dp"
         android:layout_marginTop="10dp"

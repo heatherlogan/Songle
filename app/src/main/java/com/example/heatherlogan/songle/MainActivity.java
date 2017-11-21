@@ -39,6 +39,11 @@ public class MainActivity extends AppCompatActivity {
     public final String TAG = "MainActivity";
     public static final String WIFI = "Wi-fi";
 
+
+
+
+
+
     private RadioGroup difficultyoptions;
     int difficultyChoice;
 
@@ -143,6 +148,10 @@ public class MainActivity extends AppCompatActivity {
                                 Intent intent = new Intent(MainActivity.this, GameActivity.class);
                                 intent.putExtra("mapNo", difficultyChoice);
                                 startActivity(intent);
+
+                                // add timer?
+
+
                             }
                         });
                         m2Builder.setView(m2View);

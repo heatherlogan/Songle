@@ -82,7 +82,7 @@ public class MapActivity
     private static final String TAG = "Maps Activity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    public static final float DEFAULT_ZOOM = 19.0f;
+    public static final float DEFAULT_ZOOM = 7.0f;
 
 
 
@@ -533,6 +533,7 @@ public class MapActivity
     // adds words to collected words list and displays them in list view
 
     public void addToCollectedWords(WordInfo object){
+
         word_data.addCollectedWord(object);
     }
 

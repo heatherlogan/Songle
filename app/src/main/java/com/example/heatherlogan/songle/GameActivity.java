@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +51,9 @@ public class GameActivity extends AppCompatActivity {
     public static final String URL = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/songs.txt";
     public static String kmlURL;
     public static String lyricURL;
+
+    private Chronometer mChronometer;
+    private long time;
     // public static final String kmlURL = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/15/map5.txt";
 
     PlacemarkDatasource data;
@@ -94,6 +99,10 @@ public class GameActivity extends AppCompatActivity {
         new DownloadXmlTask().execute(URL);
         new DownloadKmlTask().execute(kmlURL);
 
+
+        mChronometer = (Chronometer) findViewById(R.id.chronometer);
+        onStartTimer();
+
         //buttons
 
         openMap();
@@ -135,11 +144,19 @@ public class GameActivity extends AppCompatActivity {
                     public void onClick(View view) {
 
                         String guess = mGuess.getText().toString();
-                        Toast.makeText(GameActivity.this, guess, Toast.LENGTH_LONG).show();
 
                         if (isGuessCorrect(guess)) {
 
                             // on correct guess
+
+                            long timeToComplete = SystemClock.elapsedRealtime() - mChronometer.getBase();
+
+                            onStopTimer();
+
+                            String timeString = "You completed game in " + formatTime(timeToComplete);
+
+                            Toast.makeText(GameActivity.this, timeString, Toast.LENGTH_LONG).show();
+
 
                             AlertDialog.Builder m4Builder = new AlertDialog.Builder(GameActivity.this);
                             View m4View = getLayoutInflater().inflate(R.layout.correct_song_dialog, null);
@@ -147,12 +164,14 @@ public class GameActivity extends AppCompatActivity {
                             TextView mTextViewSong = (TextView) m4View.findViewById(R.id.displaySong);
                             TextView mTextViewArtist = (TextView) m4View.findViewById(R.id.displayArtist);
                             TextView mTextViewLink = (TextView) m4View.findViewById(R.id.displaySongLink);
+                            TextView mTextViewTime = (TextView) m4View.findViewById(R.id.completedGameTime);
 
                             Song song = getSongInPlay();
 
                             mTextViewSong.setText(song.getTitle());
                             mTextViewArtist.setText(song.getArtist());
                             mTextViewLink.setText(song.getLink());
+                            mTextViewTime.setText(timeString);
 
                             // add steps and time
 
@@ -553,7 +572,6 @@ public class GameActivity extends AppCompatActivity {
         return result;
     }
 
-
     public boolean isGuessCorrect(String guess) {
 
         Song song = getSongInPlay();
@@ -564,13 +582,9 @@ public class GameActivity extends AppCompatActivity {
 
         if ((guess.trim().equalsIgnoreCase(correctSong.trim())) || (guess.trim().equalsIgnoreCase(ignoreBrackets.trim()))) {
 
-            Toast.makeText(GameActivity.this, "true: " + guess + " Song: " + correctSong, Toast.LENGTH_LONG).show();
-
             return true;
 
         } else {
-
-            Toast.makeText(GameActivity.this, "false: " + guess, Toast.LENGTH_LONG).show();
 
             return false;
         }
@@ -647,8 +661,9 @@ public class GameActivity extends AppCompatActivity {
                 Random r = new Random();
                 String randomLine = lines.get(r.nextInt(lines.size())).replaceAll("[0-9]", "").trim();
 
-                if (randomLine.equals("")||randomLine.startsWith("[")){
-                    hint = lines.get(r.nextInt(lines.size())).replaceAll("[0-9]", "").trim();;
+                if (randomLine.equals("") || randomLine.startsWith("[")) {
+                    hint = lines.get(r.nextInt(lines.size())).replaceAll("[0-9]", "").trim();
+                    ;
                 } else {
                     hint = randomLine;
                 }
@@ -660,21 +675,95 @@ public class GameActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        return hint;
+            return hint;
         }
     }
-        private InputStream downloadLyricUrl(String urlString) throws IOException {
 
-            URL url = new URL(urlString);
+    private InputStream downloadLyricUrl(String urlString) throws IOException {
 
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
+        URL url = new URL(urlString);
 
-            conn.connect();
-            return conn.getInputStream();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setReadTimeout(10000);
+        conn.setConnectTimeout(15000);
+        conn.setRequestMethod("GET");
+        conn.setDoInput(true);
+
+        conn.connect();
+        return conn.getInputStream();
+    }
+
+    /* ------------------------------------------- TIMER AND PEDOMETER ----------------------------------------------------*/
+
+    public void onStartTimer() {
+
+        mChronometer.setBase(SystemClock.elapsedRealtime());
+
+        mChronometer.start();
+
+    }
+
+    public void onStopTimer() {
+
+        mChronometer.setBase(SystemClock.elapsedRealtime());
+
+    }
+
+    public String formatTime(long timeElapsed) {
+
+        int hours =   (int) ((timeElapsed / (1000*60*60)));
+        int minutes = (int) ((timeElapsed / (1000*60) % 60));
+        int seconds = (int) ((timeElapsed / 1000) % 60);
+
+        StringBuilder formattedTime = new StringBuilder();
+
+        if (hours != 0) {
+            if (hours < 10) {
+                formattedTime.append("0");
+                formattedTime.append(hours);
+                formattedTime.append("hours ");
+            } else {
+                formattedTime.append(hours);
+                formattedTime.append("hours ");
+            }
         }
+        if (minutes != 0) {
+
+            if (minutes < 10) {
+                formattedTime.append("0");
+                formattedTime.append(minutes);
+                formattedTime.append("minutes ");
+            } else {
+                formattedTime.append(minutes);
+                formattedTime.append("minutes ");
+            }
+        }
+        if (seconds < 10) {
+            formattedTime.append("0");
+            formattedTime.append(seconds);
+            formattedTime.append(" seconds");
+        } else {
+            formattedTime.append(seconds);
+            formattedTime.append(" seconds");
+        }
+
+
+        System.out.println(hours + " hrs " + minutes + " mins " + seconds + "secs");
+        System.out.println(formattedTime.toString());
+
+        return formattedTime.toString();
+
+    }
+
+
+
+    /* ------------------------------------------- Dialog Handling ----------------------------------------------------*/
+
+    public void handleCorrectGuess(){}
+
+
+    public void handleIncorrectGuess(){}
+
+
 
 }
