@@ -29,6 +29,7 @@ public class PlacemarkDatasource {
     public void open(){
         db = dbhelper.getWritableDatabase();
     }
+
     public void close(){
         db.close();
     }

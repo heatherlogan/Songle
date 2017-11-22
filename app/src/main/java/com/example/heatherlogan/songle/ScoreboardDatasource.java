@@ -38,6 +38,8 @@ public class ScoreboardDatasource {
 
     }
 
+
+
     public List<User> getScoreboard() {
 
         List<User> scoreboard_users = new ArrayList<>();

@@ -69,6 +69,8 @@ public class ScoreboardAdapter extends ArrayAdapter<User> {
                     formattedTime.append(hours);
                     formattedTime.append(":");
                 }
+            } else {
+                formattedTime.append("00:");
             }
             if (minutes != 0) {
 
@@ -80,16 +82,21 @@ public class ScoreboardAdapter extends ArrayAdapter<User> {
                     formattedTime.append(minutes);
                     formattedTime.append(":");
                 }
-            }
-            if (seconds < 10) {
-                formattedTime.append("0");
-                formattedTime.append(seconds);
             } else {
-                formattedTime.append(seconds);
+                formattedTime.append("00:");
+            }
+            if (seconds != 0) {
+                if (seconds < 10) {
+                    formattedTime.append("0");
+                    formattedTime.append(seconds);
+                } else {
+                    formattedTime.append(seconds);
+                }
+            } else {
+                formattedTime.append("00");
             }
 
-            return formattedTime.toString();
-
+        return formattedTime.toString();
         }
 
 

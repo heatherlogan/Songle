@@ -11,13 +11,12 @@ import android.content.Context;
 public class MySQLiteHelper extends SQLiteOpenHelper {
 
     public static final String MARKERS_TABLE = "markers";
-    public static final String COLLECTEDWORDS_TABLE = "collected_words";
-
     public static final String ID = "marker_id";
     public static final String TITLE = "marker_title";
     public static final String SNIPPET = "marker_snippet";
     public static final String POSITION = "marker_position";
 
+    public static final String COLLECTEDWORDS_TABLE = "collected_words";
     public static final String ID2 = "word_id";
     public static final String WORD = "song_word";
     public static final String LINE_NUMBER = "word_line_no";
@@ -32,7 +31,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                     + TITLE + " text, "
                     + SNIPPET + " text, "
                     + POSITION + " text);";
-
 
     private static final String DB_CREATE_COLLECTED_WORDS =
             "create table "+ COLLECTEDWORDS_TABLE + "("
@@ -58,5 +56,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.execSQL( "DROP TABLE IF EXISTS "  + COLLECTEDWORDS_TABLE);
         onCreate(db);
     }
+
 
 }

@@ -1,6 +1,5 @@
 package com.example.heatherlogan.songle;
 
-
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.content.Context;

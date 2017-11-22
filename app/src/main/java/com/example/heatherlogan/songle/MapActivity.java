@@ -126,6 +126,7 @@ public class MapActivity
 
         goBackToGame();
         openCollectedWords();
+        openGuessDialog();
     }
 
     @Override
@@ -146,7 +147,6 @@ public class MapActivity
     public void onMapReady(GoogleMap googleMap) {
 
         gMap = googleMap;
-
 
         Log.i(TAG, "Adding Markers");
         addMarkers();
@@ -466,7 +466,7 @@ public class MapActivity
             SharedPreferences.Editor editor = mPreferences.edit();
             String lyricURL = mPreferences.getString("lyricUrl_key","");
 
-            Log.i(TAG, "got lyricURL from SharedPref"+lyricURL);
+            Log.i(TAG, "got lyricURL from SharedPref" + lyricURL);
 
             String[] parts = position.split(":");
             int lineNo = Integer.parseInt(parts[0]);
@@ -555,6 +555,17 @@ public class MapActivity
             public void onClick(View view) {
                 Intent gotocollectedwords = new Intent(MapActivity.this, ViewCollectedWords.class);
                 startActivity(gotocollectedwords);
+            }
+        });
+    }
+
+    private void openGuessDialog(){
+        Button openguess = (Button) findViewById(R.id.guessSongFromMap);
+        openguess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Toast.makeText(MapActivity.this, ":)", Toast.LENGTH_LONG).show();
             }
         });
     }

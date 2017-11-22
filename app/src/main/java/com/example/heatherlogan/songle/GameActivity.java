@@ -62,8 +62,11 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     private Boolean running = false;
     private Boolean deviceHasStepCounter = false;
 
+    int randomSongNumber = 0;
+
     PlacemarkDatasource data;
     ScoreboardDatasource scoreboard_data;
+    SongDatasource song_data;
 
     private SharedPreferences mPreferences;
     private SharedPreferences.Editor mEditor;
@@ -76,46 +79,29 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game_menu);
 
-        /* get map number from main activity, use this to generate the kml url, then
-        * get lyric txt url and add this to shared preferences to be used within map activity */
-
-        Intent intent = getIntent();
-        int mapNum = intent.getIntExtra("mapNo", 0);
-
-        Log.i(TAG, "got map number " + mapNum);
-
-        kmlURL = generateKmlUrl(mapNum);
-        Log.i(TAG, "Generate KML url " + kmlURL);
-
-        lyricURL = generateLyricUrl();
-
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mEditor = mPreferences.edit();
-        mEditor.putString("lyricUrl_key", lyricURL);
-        mEditor.apply();
-        Log.i(TAG, "Adding lyricUrl to shared pref " + lyricURL);
-
-
         // database
         data = new PlacemarkDatasource(this);
         scoreboard_data = new ScoreboardDatasource(this);
-
+        song_data = new SongDatasource(this);
 
         try {
             data.open();
             scoreboard_data.open();
+            song_data.open();
 
         } catch (Exception e) {
             Log.e(TAG, "DATABASE EXCEPTION");
         }
 
         new DownloadXmlTask().execute(URL);
-        new DownloadKmlTask().execute(kmlURL);
 
         mChronometer = (Chronometer) findViewById(R.id.chronometer);
         onStartTimer();
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+
+        song_data.clearDatabase("unplayed_songs");
 
         //buttons
 
@@ -325,36 +311,45 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     }
 
         /* ------------------------------------------ GET URLS ----------------------------------------------*/
+    // Choses a random song from the list of unplayed song and returns the int.
+    private int generateRandomSong(){
 
-    // need to change to exclude played songs - randomly select from database of unplayed songs?
-    Random random = new Random();
-    int randomNum = random.nextInt(15 + 1 - 1) + 1;
+        List<Song> unplayedSongs = song_data.getUnplayedSongs();
 
+        Song sn = unplayedSongs.get((new Random()).nextInt(unplayedSongs.size()));
+
+        System.out.println("Random Song Number " + sn.getNumber());
+        return (Integer.parseInt(sn.getNumber()));
+
+    }
+
+    // generates a kml based on the difficulty (map number) selected and the random song
     public String generateKmlUrl(int difficulty) {
 
         String songNo;
-        if (randomNum < 10) {
+        if (randomSongNumber < 10) {
 
-            songNo = "0" + randomNum;
+            songNo = "0" + randomSongNumber;
 
         } else {
-            songNo = "" + randomNum;
+            songNo = "" + randomSongNumber;
         }
 
         return "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/"
                 + songNo + "/map" + difficulty + ".txt";
     }
 
+    // generates a url for lyrics based on the random song selected
     public String generateLyricUrl() {
 
         String songNo;
 
-        if (randomNum < 10) {
+        if (randomSongNumber < 10) {
 
-            songNo = "0" + randomNum;
+            songNo = "0" + randomSongNumber;
 
         } else {
-            songNo = "" + randomNum;
+            songNo = "" + randomSongNumber;
         }
         return "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/" + songNo + "/words.txt";
 
@@ -380,7 +375,32 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         @Override
         protected void onPostExecute(String result) {
-            // System.out.println(result + "---");
+
+            randomSongNumber = generateRandomSong();
+
+            // get map number passed from main activity and use this when getting the URL for kml file
+            Intent intent = getIntent();
+            int mapNum = intent.getIntExtra("mapNo", 0);
+            Log.i(TAG, "got map number " + mapNum);
+
+            kmlURL = generateKmlUrl(mapNum);
+            Log.i(TAG, "Generate KML url " + kmlURL);
+
+            // get a random song from the list of unplayed songs and get the url for lyric file.
+            // Save the lyric url to shared preferences to be accessed in map activity.
+
+            lyricURL = generateLyricUrl();
+
+            mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
+            mEditor = mPreferences.edit();
+            mEditor.putString("lyricUrl_key", lyricURL);
+            mEditor.apply();
+            Log.i(TAG, "Adding lyricUrl to shared pref " + lyricURL);
+
+            // call download kml task when all components needed are available.
+
+            new DownloadKmlTask().execute(kmlURL);
+
         }
 
     }
@@ -408,6 +428,15 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             }
         }
 
+        List<Song> played_songs = song_data.getPlayedSongs();
+
+        System.out.println("Played songs: "+ played_songs.size());
+
+        for (Song song2 : played_songs) {
+            System.out.println(song2.getNumber());
+        }
+
+
         ArrayList<Song> songsArrayList = new ArrayList<>();
 
         for (Song song : songs) {
@@ -416,7 +445,24 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             result.append(" : " + song.getTitle() + " : " + song.getArtist() + " : " + song.getLink() + "");
 
             // save list of songs to shared preferences
+
+            Song unplayed = new Song(song.getNumber(), song.getArtist(), song.getTitle());
+
+            // if song is not in played songs; add to unplayed songs database
+
+            if (!(song_data.songExistsInPlayed(unplayed.getNumber()))){
+                song_data.addUnplayedSong(unplayed);
+            }
+
             songsArrayList.add(song);
+        }
+
+
+        List<Song> playable = song_data.getUnplayedSongs();
+
+        System.out.print("Playable songs: " + playable.size()) ;
+        for (Song p : playable) {
+            System.out.println(p.getNumber());
         }
 
         saveSongList(songsArrayList);
@@ -445,8 +491,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-    // Save songs downloaded from xml to an arraylist and save in shared preferences.
-
+    // Save songs downloaded from xml to an arraylist and save in shared preferences to be used by TODO
     public void saveSongList(ArrayList<Song> songsArrayList) {
 
         SharedPreferences sharedPref = getSharedPreferences("Shared Pref", MODE_PRIVATE);
@@ -472,6 +517,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
 
     /* --------------------------------------------- KML ------------------------------------------------------*/
+
     private class DownloadKmlTask extends AsyncTask<String, Void, List<Placemark>> {
 
         @Override
@@ -772,10 +818,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             formattedTime.append(" seconds");
         }
 
-
-        System.out.println(hours + " hrs " + minutes + " mins " + seconds + "secs");
-        System.out.println(formattedTime.toString());
-
         return formattedTime.toString();
 
     }
@@ -817,17 +859,35 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         mTextViewLink.setText(song.getLink());
         mTextViewTime.setText(timeString);
 
+
+        Log.i(TAG, "Remove " + song.getTitle() + "from unplayed songs");
+        song_data.removeUnplayedSong(song.getNumber());
+
+        Log.i(TAG, "Add " + song.getTitle() + " to played songs");
+        song_data.addPlayedSong(new Song(song.getNumber(), song.getArtist(), song.getTitle()));
+
+
         Button continue3 = (Button) m4View.findViewById(R.id.continue3);
+
+        m4Builder.setView(m4View);
+        final AlertDialog dialog4 = m4Builder.create();
+        dialog4.show();
+
         continue3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
              addToScoreBoard(timeToComplete);
+             dialog4.dismiss();
+
+             List<Song> unplayedSongs = song_data.getUnplayedSongs();
+
+             System.out.println("After removed " + unplayedSongs.size());
+
+
             }
         });
-        m4Builder.setView(m4View);
-        AlertDialog dialog4 = m4Builder.create();
-        dialog4.show();
+
 
     }
 
@@ -879,11 +939,12 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         AlertDialog.Builder m2Builder = new AlertDialog.Builder(GameActivity.this);
         View m2View = getLayoutInflater().inflate(R.layout.enter_name_dialog, null);
 
-            final EditText userName = (EditText) m2View.findViewById(R.id.enterNameET);
-            Button  enter = (Button) m2View.findViewById(R.id.enterNameBttn);
+        final EditText userName = (EditText) m2View.findViewById(R.id.enterNameET);
+        Button  enter = (Button) m2View.findViewById(R.id.enterNameBttn);
+        Button dontenter = (Button) m2View.findViewById(R.id.dontEnterName);
 
-            Intent intent = getIntent();
-            final int mapNo = intent.getIntExtra("mapNo", 0);
+        Intent intent = getIntent();
+        final int mapNo = intent.getIntExtra("mapNo", 0);
 
 
         m2Builder.setView(m2View);
@@ -905,15 +966,31 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                 Log.i(TAG, "adding to scoreboard");
 
-                scoreboard_data.addToScoreboard(user);
+                if ((name.length() != 0)) {
+                    scoreboard_data.addToScoreboard(user);
+                    Intent i = new Intent(GameActivity.this, ScoreboardActivity.class);
+                    startActivity(i);
+                    dialog2.dismiss();
 
-                Intent i = new Intent(GameActivity.this, ScoreboardActivity.class);
+                } else {
+                    Toast.makeText(GameActivity.this, "Enter your name", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
+
+        dontenter.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+
+                Intent i = new Intent(GameActivity.this, MainActivity.class);
                 startActivity(i);
 
             }
         });
     }
 
+    // helper method to convert int difficulty(map number) to string
     public String mapToStringDifficulty(int n){
 
         String difficulty = null;

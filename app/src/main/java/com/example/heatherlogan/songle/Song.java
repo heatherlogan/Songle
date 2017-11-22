@@ -7,6 +7,14 @@ public class Song {
     private String title;
     private String link;
 
+    public Song(){}
+
+    public Song(String number, String artist, String title){
+        this.number = number;
+        this.artist = artist;
+        this.title = title;
+    }
+
     public Song(String number, String artist, String title, String link) {
 
         this.number = number;
