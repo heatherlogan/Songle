@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ScoreboardActivity extends AppCompatActivity {
@@ -32,6 +33,8 @@ public class ScoreboardActivity extends AppCompatActivity {
         List<User> scoreboard_users = scoreboard_data.getScoreboard();
 
         ArrayList<User> scoreboard_array = new ArrayList<User>(scoreboard_users);
+
+        Collections.sort(scoreboard_array, User.UserComparator);
         // add comparator
 
         ScoreboardAdapter adapter = new ScoreboardAdapter(

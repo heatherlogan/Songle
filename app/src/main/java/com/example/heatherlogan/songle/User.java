@@ -1,5 +1,7 @@
 package com.example.heatherlogan.songle;
 
+import java.util.Comparator;
+
 public class User {
 
     private String name;
@@ -55,5 +57,17 @@ public class User {
     public void setUserSteps(int steps) {
         this.steps = steps;
     }
+
+    public static Comparator<User> UserComparator = new Comparator<User>(){
+
+        public int compare(User u1, User u2) {
+
+            int time1 = u1.getUserTime();
+            int time2 = u1.getUserTime();
+
+           return time1 - time2;
+        }
+    };
+
 
 }

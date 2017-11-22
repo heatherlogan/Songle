@@ -112,7 +112,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         new DownloadXmlTask().execute(URL);
         new DownloadKmlTask().execute(kmlURL);
 
-
         mChronometer = (Chronometer) findViewById(R.id.chronometer);
         onStartTimer();
 
@@ -141,7 +140,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             mSensorManager.registerListener(this, countsensor, SensorManager.SENSOR_DELAY_UI);
         } else {
             deviceHasStepCounter = false;
-            Toast.makeText(this, "Sensor not found!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -899,7 +897,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 String name = userName.getText().toString();
                 String level = mapToStringDifficulty(mapNo);
                 int time1 = time;
-                int steps = 0;
+                int steps = 1000;
 
                 User user = new User(name, level, time1);
 
@@ -911,7 +909,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                 Intent i = new Intent(GameActivity.this, ScoreboardActivity.class);
                 startActivity(i);
-
 
             }
         });

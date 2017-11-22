@@ -16,6 +16,7 @@ public class MySQLiteHelper2 extends SQLiteOpenHelper {
     public static final String NAME = "user_name";
     public static final String LEVEL = "user_level";
     public static final String TIME = "user_time";
+   // public static final String STEPS = "user_steps";
 
     private static final int D_VERSION = 1;
     private static final String DB_NAME = "scoreboard_info.db";

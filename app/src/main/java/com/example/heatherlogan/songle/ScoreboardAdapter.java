@@ -22,6 +22,7 @@ public class ScoreboardAdapter extends ArrayAdapter<User> {
         mContext = context;
         mResource = resource;
     }
+
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -29,6 +30,7 @@ public class ScoreboardAdapter extends ArrayAdapter<User> {
         String name = getItem(position).getUserName();
         String level = getItem(position).getUserLevel();
         int time = getItem(position).getUserTime();
+        // int steps = getItem(position).getUserSteps();
 
         User u = new User(name, level, time);
 
@@ -38,13 +40,57 @@ public class ScoreboardAdapter extends ArrayAdapter<User> {
         TextView tvName = (TextView) convertView.findViewById(R.id.nameTextView);
         TextView tvLevel = (TextView) convertView.findViewById(R.id.levelTextView);
         TextView tvTime = (TextView) convertView.findViewById(R.id.timeTextView);
+       //  TextView tvSteps = (TextView) convertView.findViewById(R.id.stepsTextView);
 
         tvName.setText(name);
         tvLevel.setText(level);
-        tvTime.setText(Integer.toString(time));
+        tvTime.setText(formatTime(time));
+      //  tvTime.setText(Integer.toString(steps));
 
 
         return convertView;
 
     }
+
+    private static String formatTime(int time){
+
+            int hours =   (int) ((time / (1000*60*60)));
+            int minutes = (int) ((time / (1000*60) % 60));
+            int seconds = (int) ((time / 1000) % 60);
+
+            StringBuilder formattedTime = new StringBuilder();
+
+            if (hours != 0) {
+                if (hours < 10) {
+                    formattedTime.append("0");
+                    formattedTime.append(hours);
+                    formattedTime.append(":");
+                } else {
+                    formattedTime.append(hours);
+                    formattedTime.append(":");
+                }
+            }
+            if (minutes != 0) {
+
+                if (minutes < 10) {
+                    formattedTime.append("0");
+                    formattedTime.append(minutes);
+                    formattedTime.append(":");
+                } else {
+                    formattedTime.append(minutes);
+                    formattedTime.append(":");
+                }
+            }
+            if (seconds < 10) {
+                formattedTime.append("0");
+                formattedTime.append(seconds);
+            } else {
+                formattedTime.append(seconds);
+            }
+
+            return formattedTime.toString();
+
+        }
+
+
 }
