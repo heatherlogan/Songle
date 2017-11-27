@@ -81,7 +81,6 @@
             android:background="@drawable/mybutton"
             android:textSize="30sp"
             android:textAllCaps="false"
-            android:onClick="openOptions"
             android:textColor="@color/lightGrey"
             android:layout_margin="5dp"
             />

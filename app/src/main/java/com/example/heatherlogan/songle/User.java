@@ -63,7 +63,7 @@ public class User {
         public int compare(User u1, User u2) {
 
             int time1 = u1.getUserTime();
-            int time2 = u1.getUserTime();
+            int time2 = u2.getUserTime();
 
            return time1 - time2;
         }

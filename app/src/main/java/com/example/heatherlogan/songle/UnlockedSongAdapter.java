@@ -28,7 +28,7 @@ public class UnlockedSongAdapter extends ArrayAdapter<Song> {
 
         // using name of song in place of number for the purpose of displaying on unlocked songs activity
 
-        String name = getItem(position).getNumber();
+        String name = getItem(position).getTitle();
         String artist = getItem(position).getArtist();
 
         Song song = new Song(name, artist, null, null);

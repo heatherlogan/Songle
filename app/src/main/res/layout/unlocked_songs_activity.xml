@@ -65,7 +65,7 @@
 
         <Button
             android:textAllCaps="false"
-            android:id="@+id/gobackColWords"
+            android:id="@+id/gobackUnlockedSongs"
             android:textColor="@color/lightGrey"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

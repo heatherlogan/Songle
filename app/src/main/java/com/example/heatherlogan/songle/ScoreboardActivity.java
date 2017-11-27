@@ -1,5 +1,6 @@
 package com.example.heatherlogan.songle;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -63,7 +64,8 @@ public class ScoreboardActivity extends AppCompatActivity {
         goback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ScoreboardActivity.super.onBackPressed();
+                Intent i = new Intent (ScoreboardActivity.this, MainActivity.class);
+                startActivity(i);
             }
         });
 

@@ -3,19 +3,18 @@
               android:orientation="vertical"
               android:background="@drawable/myanalog"
               android:layout_width="match_parent"
-              android:layout_height="200dp"
+              android:layout_height="150dp"
               android:padding="5dp"
               android:weightSum="1">
 
     <TextView
-        android:id="@+id/resetheader"
+        android:id="@+id/guessTV2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/blue"
-        android:text="Resetting game will clear all data including high scores and previously played songs.
-Are you sure you want to reset game?"
+        android:text="Hint dialog"
         android:layout_gravity="center"
-        android:textSize="20dp"
+        android:textSize="22dp"
         android:layout_marginTop="10dp"
         android:textAlignment="center"
         android:layout_weight="0.17"/>
@@ -24,7 +23,7 @@ Are you sure you want to reset game?"
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:layout_below="@id/resetheader"
+        android:layout_below="@id/guessTV"
         android:layout_marginTop="5dp"
         android:orientation="horizontal"
         android:padding="15dp"
@@ -32,26 +31,13 @@ Are you sure you want to reset game?"
 
         <Button
             android:textAllCaps="false"
-            android:id="@+id/resetYes"
-            android:textColor="@color/lightGrey"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Yes"
-            android:layout_gravity="center"
-            android:textSize="20dp"
-            android:background="@drawable/mybutton"
-            android:layout_marginRight="5dp"
-            android:layout_weight="0.5"/>
-
-        <Button
-            android:textAllCaps="false"
-            android:id="@+id/resetNo"
+            android:id="@+id/requestHintNo"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:text="No"
+            android:text="Keep Playing"
             android:textColor="@color/lightGrey"
             android:layout_marginLeft="10dp"
-            android:textSize="20dp"
+            android:textSize="17dp"
             android:layout_gravity="center"
             android:background="@drawable/mybutton"
             android:layout_weight="0.5"/>

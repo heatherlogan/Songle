@@ -17,13 +17,22 @@
               tools:context=".MapsActivity"/>
 
     <LinearLayout
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/layout1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="191dp"
+        android:orientation="vertical"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical"
-        android:padding="15dp">
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:padding="15dp"
+        android:id="@+id/linearLayout">
+
 
         <Button
             android:id="@+id/backHomeMap"
@@ -38,15 +47,6 @@
             android:textAllCaps="false"
             android:textColor="@color/lightGrey"
             android:textSize="15dp"/>
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:padding="15dp">
 
         <Button
             android:id="@+id/viewWordsFromMap"
@@ -58,19 +58,6 @@
             android:background="@drawable/mybutton"
             android:padding="5dp"
             android:text="View Collected Words"
-            android:textAllCaps="false"
-            android:textColor="@color/lightGrey"
-            android:textSize="15dp"/>
-
-        <Button
-            android:id="@+id/guessSongFromMap"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:layout_weight="0.5"
-            android:background="@drawable/mybutton"
-            android:text="Guess Song"
             android:textAllCaps="false"
             android:textColor="@color/lightGrey"
             android:textSize="15dp"/>

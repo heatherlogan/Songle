@@ -2,6 +2,8 @@ package com.example.heatherlogan.songle;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         MapsInitializer.initialize(getApplicationContext());
 
         if (checkServices()) {
-            openGame();
+            resumeGame();
             newGame();
 
         } else {
@@ -69,21 +71,41 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e ){
             Log.e(TAG, "DATABASE EXCEPTION");
         }
+
+        openOptions();
     }
 
     /*--------------------------------------------- Buttons ----------------------------------------------------------*/
-    private void openGame() {
+    private void resumeGame() {
         Button resumeGameButton = findViewById(R.id.resumeGameButton);
         resumeGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent gotoGame = new Intent(MainActivity.this, GameActivity.class);
-                startActivity(gotoGame);
+
+                SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                SharedPreferences.Editor editor = mPreferences.edit();
+                Boolean gameInPlay = mPreferences.getBoolean("GameState", false);
+
+                Log.i(TAG, "got gamestate from shared pref" + gameInPlay);
+
+                if (gameInPlay == true) {
+
+                    // open game in its last state
+
+                    Toast.makeText(MainActivity.this, "game is in play", Toast.LENGTH_LONG).show();
+
+
+                } else {
+
+                    // display dialog asking to start a new game
+
+                    Toast.makeText(MainActivity.this, "game is not in play", Toast.LENGTH_LONG).show();
+                }
+
             }
         });
     }
 
-    // Need to add Radio Button Functions
     private void newGame(){
         Button newGameButton = findViewById(R.id.newGameButton);
         newGameButton.setOnClickListener(new View.OnClickListener(){
@@ -173,8 +195,6 @@ public class MainActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
-
-
             }
         });
     }
@@ -184,9 +204,18 @@ public class MainActivity extends AppCompatActivity {
         startActivity(openScoreboard);
     }
 
-    public void openOptions(View view) {
-        Intent openOptions = new Intent(MainActivity.this, OptionsActivity.class);
-        startActivity(openOptions);
+    public void openOptions() {
+
+        Button optionsBttn = (Button) findViewById(R.id.optionsButton);
+        optionsBttn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent openOptions = new Intent(MainActivity.this, OptionsActivity.class);
+                startActivity(openOptions);
+            }
+
+        });
+
     }
 
     /* -------------Check for connection to google Play Services and Network Connection before entering game----------------------- */

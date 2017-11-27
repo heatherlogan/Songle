@@ -49,8 +49,6 @@
             android:text="Line: Position"
             android:layout_weight="70"
             android:paddingRight="10dp"/>
-
-
         </LinearLayout>
 
     <ListView

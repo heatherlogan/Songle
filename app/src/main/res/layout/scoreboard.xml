@@ -84,7 +84,7 @@
             android:textColor="@color/lightGrey"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Go back"
+            android:text="Main Menu"
             android:layout_gravity="center"
             android:textSize="20dp"
             android:background="@drawable/mybutton"

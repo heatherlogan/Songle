@@ -1,16 +1,22 @@
 package com.example.heatherlogan.songle;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,6 +50,13 @@ import java.util.TimerTask;
 import java.util.List;
 import java.util.Random;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -55,6 +68,12 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     public static String kmlURL;
     public static String lyricURL;
 
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+
+    private Location mLastLocation;
+    GoogleApiClient mGoogleApiClient;
+
     private Chronometer mChronometer;
     private long time;
 
@@ -62,7 +81,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     private Boolean running = false;
     private Boolean deviceHasStepCounter = false;
 
-    int randomSongNumber = 0;
+    public Boolean gameinPlay = false;
+
+    private int randomSongNumber = 0;
 
     PlacemarkDatasource data;
     ScoreboardDatasource scoreboard_data;
@@ -95,29 +116,37 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         new DownloadXmlTask().execute(URL);
 
+
+        // for timer and pedometer
         mChronometer = (Chronometer) findViewById(R.id.chronometer);
         onStartTimer();
-
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
 
+        // clear unplayed songs on each play, then add again on download xml
+        // excluding songs in 'Played Songs' database.
+
         song_data.clearDatabase("unplayed_songs");
 
+        /* saves a game state to shared preferences so that on the main activity, new game or resume game can be used
+        * depending on whether a game has been completed or not. */
+
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
+        mEditor = mPreferences.edit();
+        mEditor.putBoolean("GameState", true);
+        mEditor.apply();
+        Log.i(TAG, "Updating game state to " + true);
+
         //buttons
-
         openMap();
-
         openCollectedWords();
-
         guessSong();
-
         openGetHint();
-
         giveUp();
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         running = true;
         Sensor countsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
@@ -130,12 +159,27 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     }
 
     @Override
-    protected void onPause(){
+    protected void onPause() {
         super.onPause();
         running = false;
 
-         // keep running when app is not open?
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
+        mEditor = mPreferences.edit();
+        mEditor.putBoolean("GameState", true);
+        mEditor.apply();
+        Log.i(TAG, "Updating game state to " + true);
 
+        // keep running when app is not open?
+    }
+
+
+    protected void onDestroy() {
+        super.onDestroy();
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
+        mEditor = mPreferences.edit();
+        mEditor.putBoolean("GameState", false);
+        mEditor.apply();
+        Log.i(TAG, "Updating game state to " + false);
     }
 
         /* ----------------------------------------------- BUTTONS ----------------------------------------------*/
@@ -166,7 +210,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 mBuilder.setView(mView);
                 final AlertDialog dialog = mBuilder.create();
                 dialog.show();
-
 
                 mEnter.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -213,32 +256,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         getHintBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
-                View mView = getLayoutInflater().inflate(R.layout.request_hint, null);
 
-                Button getHintYes = mView.findViewById(R.id.getHintYes);
-                Button getHintNo = (Button) mView.findViewById(R.id.getHintNo);
-
-                mBuilder.setView(mView);
-                final AlertDialog dialog = mBuilder.create();
-                dialog.show();
-
-                getHintYes.setOnClickListener(new View.OnClickListener() {
-                    //reveal song info when gave up
-                    @Override
-                    public void onClick(View view) {
-                        new GetHint().execute(URL);
-                        dialog.dismiss();
-                    }
-                });
-
-                getHintNo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialog.dismiss();
-                    }
-                });
-
+                new GetHint().execute(URL);
             }
         });
     }
@@ -281,7 +300,20 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                         final AlertDialog dialog2 = m2Builder.create();
                         dialog2.show();
 
+                        mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
+                        mEditor = mPreferences.edit();
+                        mEditor.putBoolean("GameState", false);
+                        mEditor.apply();
+                        Log.i(TAG, "Updating game state to " + false);
+
                         // remove song from unplayed songs and add to unplayed songs.
+
+                        Log.i(TAG, "Remove " + currentSong.getTitle() + "from unplayed songs");
+                        song_data.removeUnplayedSong(currentSong.getNumber());
+
+                        Log.i(TAG, "Add " + currentSong.getTitle() + " to played songs");
+                        song_data.addPlayedSong(new Song(currentSong.getNumber(), currentSong.getArtist(), currentSong.getTitle()));
+
 
                         // button for new game or remove?
 
@@ -311,8 +343,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     }
 
         /* ------------------------------------------ GET URLS ----------------------------------------------*/
+
     // Choses a random song from the list of unplayed song and returns the int.
-    private int generateRandomSong(){
+    private int generateRandomSong() {
 
         List<Song> unplayedSongs = song_data.getUnplayedSongs();
 
@@ -398,7 +431,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             Log.i(TAG, "Adding lyricUrl to shared pref " + lyricURL);
 
             // call download kml task when all components needed are available.
-
             new DownloadKmlTask().execute(kmlURL);
 
         }
@@ -406,6 +438,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private String loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException {
+
+        /* loads XML from network, adds all songs from XML to an empty list songs
+        * Excluding ones that are in the 'Played songs' database. Returns a list of
+        * playable songs in string form  */
 
         InputStream stream = null;
 
@@ -430,13 +466,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         List<Song> played_songs = song_data.getPlayedSongs();
 
-        System.out.println("Played songs: "+ played_songs.size());
-
-        for (Song song2 : played_songs) {
-            System.out.println(song2.getNumber());
-        }
-
-
         ArrayList<Song> songsArrayList = new ArrayList<>();
 
         for (Song song : songs) {
@@ -445,32 +474,32 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             result.append(" : " + song.getTitle() + " : " + song.getArtist() + " : " + song.getLink() + "");
 
             // save list of songs to shared preferences
-
             Song unplayed = new Song(song.getNumber(), song.getArtist(), song.getTitle());
 
             // if song is not in played songs; add to unplayed songs database
-
-            if (!(song_data.songExistsInPlayed(unplayed.getNumber()))){
+            if (!(song_data.songExistsInPlayed(unplayed.getNumber()))) {
                 song_data.addUnplayedSong(unplayed);
             }
 
             songsArrayList.add(song);
         }
 
-
         List<Song> playable = song_data.getUnplayedSongs();
 
-        System.out.print("Playable songs: " + playable.size()) ;
+        System.out.print("Playable songs: ");
         for (Song p : playable) {
-            System.out.println(p.getNumber());
+            System.out.print(p.getNumber() + " ");
+        }
+
+        System.out.print("Played songs: ");
+        for (Song p : played_songs) {
+            System.out.print(p.getNumber() + " ");
         }
 
         saveSongList(songsArrayList);
-
         loadSongList();
 
         return result.toString();
-
     }
 
     //Given a string connection  of a url, sets up a string connection and gets an input stream.
@@ -514,7 +543,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         return songsArrayList;
     }
-
 
     /* --------------------------------------------- KML ------------------------------------------------------*/
 
@@ -599,10 +627,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         String songNo;
         Song result = null;
 
-        if (randomNum < 10) {
-            songNo = "0" + randomNum;
+        if (randomSongNumber < 10) {
+            songNo = "0" + randomSongNumber;
         } else {
-            songNo = "" + randomNum;
+            songNo = "" + randomSongNumber;
         }
 
         ArrayList<Song> songs = loadSongList();
@@ -655,100 +683,251 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         @Override
         protected void onPostExecute(String hint) {
 
+            final String hint2 = hint;
 
-            AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
-            View mView = getLayoutInflater().inflate(R.layout.show_hint_dialog, null);
+            if (hasGotHint) {
 
-            TextView tv = (TextView) mView.findViewById(R.id.hintTV);
+                // User has already had a hint and cannot get another.
 
-            if (hasGotHint){
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
+                final View mView = getLayoutInflater().inflate(R.layout.request_hint2, null);
+                TextView tv = (TextView) mView.findViewById(R.id.guessTV2);
+
+                Button bttn = (Button) mView.findViewById(R.id.requestHintNo);
+
                 tv.setText("You have already had a hint!");
+
+                mBuilder.setView(mView);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
+
+                bttn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
             } else {
+
                 if (deviceHasStepCounter) {
-                    int steps = 0; // change to getSteps
+                    final int steps = 0; // change to getSteps
                     if (steps < 2000) {
+
+                        // User has not walked enough steps to get a hint.
+                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
+                        final View mView = getLayoutInflater().inflate(R.layout.request_hint2, null);
+                        TextView tv = (TextView) mView.findViewById(R.id.guessTV2);
+
+                        Button bttn = (Button) mView.findViewById(R.id.requestHintNo);
+
                         tv.setText("You need to have walked at least 2000 steps to get a hint!");
+
+                        mBuilder.setView(mView);
+                        final AlertDialog dialog = mBuilder.create();
+                        dialog.show();
+
+                        bttn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                            }
+                        });
+
                     } else {
-                        tv.setText(hint);
-                        hasGotHint = true;
+
+                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
+                        final View mView = getLayoutInflater().inflate(R.layout.request_hint, null);
+                        TextView tv = (TextView) mView.findViewById(R.id.guessTV2);
+
+                        Button bttnYes = (Button) mView.findViewById(R.id.getHintYes);
+                        Button bttnNo = (Button) mView.findViewById(R.id.getHintNo);
+
+                        tv.setText("You have walked " + steps + " and have unlocked a hint!");
+
+                        mBuilder.setView(mView);
+                        final AlertDialog dialog = mBuilder.create();
+                        dialog.show();
+
+                        bttnYes.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                dialog.dismiss();
+
+                                AlertDialog.Builder m2Builder = new AlertDialog.Builder(GameActivity.this);
+                                final View m2View = getLayoutInflater().inflate(R.layout.show_hint_dialog, null);
+                                TextView tv2 = (TextView) m2View.findViewById(R.id.showHintTV);
+
+                                tv2.setText(hint2);
+
+                                m2Builder.setView(mView);
+                                final AlertDialog dialog2 = m2Builder.create();
+                                dialog2.show();
+
+                                dialog.dismiss();
+
+                                final Timer t = new Timer();
+                                t.schedule(new TimerTask() {
+                                    public void run() {
+                                        dialog2.dismiss();
+                                        t.cancel();
+                                    }
+                                }, 3000);
+
+                                hasGotHint = true;
+                            }
+                        });
+
+                        bttnNo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                            }
+                        });
+
+
+
                     }
 
                 } else {
+
+                    // User's device does not has step counter so ability to get hint is based on time played
+
                     long timePlayed = SystemClock.elapsedRealtime() - mChronometer.getBase();
-                    int hours = (int) ((timePlayed / (1000 * 60 * 60)));
+                    double hours = (double) ((timePlayed / (1000 * 60 * 60)));
                     int seconds = (int) ((timePlayed / 1000) % 60);
 
-                    if (seconds < 30) // change to one hour!
+                    System.out.println("HOURS " + hours);
+                    System.out.println("SECONDS "+ seconds);
+
+                    if (hours < 1)
                     {
+
+                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
+                        final View mView = getLayoutInflater().inflate(R.layout.request_hint2, null);
+                        TextView tv = (TextView) mView.findViewById(R.id.guessTV2);
+
+                        Button bttn = (Button) mView.findViewById(R.id.requestHintNo);
+
                         tv.setText("You must have played for 1 hour to get a hint!");
+
+                        mBuilder.setView(mView);
+                        final AlertDialog dialog = mBuilder.create();
+                        dialog.show();
+
+                        bttn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                            }
+                        });
+
+
                     } else {
-                        tv.setText(hint);
-                        hasGotHint = true;
+                        // User has played for over an hour and has unlocked a hint
+
+                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
+                        final View mView = getLayoutInflater().inflate(R.layout.request_hint, null);
+                        TextView tv = (TextView) mView.findViewById(R.id.guessTV);
+
+                        Button bttnYes = (Button) mView.findViewById(R.id.getHintYes);
+                        Button bttnNo = (Button) mView.findViewById(R.id.getHintNo);
+
+                        String s = "You have played (time) and have unlocked a hint";
+                        tv.setText(s);
+
+                        mBuilder.setView(mView);
+                        final AlertDialog dialog = mBuilder.create();
+                        dialog.show();
+
+                        bttnYes.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                dialog.dismiss();
+
+                                AlertDialog.Builder m2Builder = new AlertDialog.Builder(GameActivity.this);
+                                final View m2View = getLayoutInflater().inflate(R.layout.show_hint_dialog, null);
+                                TextView tv2 = (TextView) m2View.findViewById(R.id.showHintTV);
+
+                                tv2.setText(hint2);
+
+                                m2Builder.setView(m2View);
+                                final AlertDialog dialog2 = m2Builder.create();
+                                dialog2.show();
+
+                                hasGotHint = true;
+
+                                final Timer t = new Timer();
+                                t.schedule(new TimerTask() {
+                                    public void run() {
+                                        dialog2.dismiss();
+                                        t.cancel();
+                                    }
+                                }, 3000);
+                            }
+                        });
+
+                        bttnNo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                            }
+                        });
+
                     }
+
                 }
             }
-
-            mBuilder.setView(mView);
-            final AlertDialog dialog2 = mBuilder.create();
-            dialog2.show();
-
-            //Dialog times out after 2 seconds
-
-            final Timer t = new Timer();
-            t.schedule(new TimerTask() {
-                public void run() {
-                    dialog2.dismiss();
-                    t.cancel();
-                }
-            }, 3000);
-
         }
 
-        private String getHint(String url) throws IOException {
+    private String getHint(String url) throws IOException {
 
-            InputStream is = null;
-            String hint = "";
+        InputStream is = null;
+        String hint = "";
 
-            SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
-            SharedPreferences.Editor editor = mPreferences.edit();
-            String lyricURL = mPreferences.getString("lyricUrl_key", "");
+        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
+        SharedPreferences.Editor editor = mPreferences.edit();
+        String lyricURL = mPreferences.getString("lyricUrl_key", "");
 
-            StringBuilder l = new StringBuilder();
+        StringBuilder l = new StringBuilder();
 
-            //download lyric url
-            try {
-                is = downloadLyricUrl(lyricURL);
-                int counter = 0;
+        //download lyric url
+        try {
+            is = downloadLyricUrl(lyricURL);
 
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-                String line = br.readLine();
-                List<String> lines = new ArrayList<String>();
+            String line = br.readLine();
+            List<String> lines = new ArrayList<String>();
 
-                while (line != null) {
-                    lines.add(line);
-                    line = br.readLine();
-                }
-                Random r = new Random();
-                String randomLine = lines.get(r.nextInt(lines.size())).replaceAll("[0-9]", "").trim();
-
-                if (randomLine.equals("") || randomLine.startsWith("[")) {
-                    hint = lines.get(r.nextInt(lines.size())).replaceAll("[0-9]", "").trim();
-                    ;
-                } else {
-                    hint = randomLine;
-                }
-
-                System.out.println(hint);
-
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
+            while (line != null) {
+                lines.add(line);
+                line = br.readLine();
             }
-            return hint;
+            Random r = new Random();
+            String randomLine = lines.get(r.nextInt(lines.size())).replaceAll("[0-9]", "").trim();
+
+            if (randomLine.equals("") || randomLine.startsWith("[")) {
+                hint = lines.get(r.nextInt(lines.size())).replaceAll("[0-9]", "").trim();
+
+            } else {
+                hint = randomLine;
+            }
+
+            System.out.println(hint);
+
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return hint;
     }
+
+}
+
 
     private InputStream downloadLyricUrl(String urlString) throws IOException {
 
@@ -769,7 +948,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     public void onStartTimer() {
 
         mChronometer.setBase(SystemClock.elapsedRealtime());
-
         mChronometer.start();
 
     }
@@ -792,10 +970,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             if (hours < 10) {
                 formattedTime.append("0");
                 formattedTime.append(hours);
-                formattedTime.append("hours ");
+                formattedTime.append(" hours ");
             } else {
                 formattedTime.append(hours);
-                formattedTime.append("hours ");
+                formattedTime.append(" hours ");
             }
         }
         if (minutes != 0) {
@@ -803,10 +981,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             if (minutes < 10) {
                 formattedTime.append("0");
                 formattedTime.append(minutes);
-                formattedTime.append("minutes ");
+                formattedTime.append(" minutes and ");
             } else {
                 formattedTime.append(minutes);
-                formattedTime.append("minutes ");
+                formattedTime.append(" minutes ");
             }
         }
         if (seconds < 10) {
@@ -865,6 +1043,14 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         Log.i(TAG, "Add " + song.getTitle() + " to played songs");
         song_data.addPlayedSong(new Song(song.getNumber(), song.getArtist(), song.getTitle()));
+
+
+        // change gamestate to false
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
+        mEditor = mPreferences.edit();
+        mEditor.putBoolean("GameState", false);
+        mEditor.apply();
+        Log.i(TAG, "Updating game state to " + false);
 
 
         Button continue3 = (Button) m4View.findViewById(R.id.continue3);
@@ -990,6 +1176,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         });
     }
 
+  /* -------------------------------------------  Helpers ----------------------------------------------------*/
+
     // helper method to convert int difficulty(map number) to string
     public String mapToStringDifficulty(int n){
 
@@ -1012,6 +1200,4 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         }
         return difficulty;
     }
-
-
 }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -126,7 +127,7 @@ public class MapActivity
 
         goBackToGame();
         openCollectedWords();
-        openGuessDialog();
+
     }
 
     @Override
@@ -353,7 +354,13 @@ public class MapActivity
 
                 if (distance[0] > collectableRadius.getRadius()){
 
-                    Toast.makeText(getBaseContext(), "You are too far away to collect this word!", Toast.LENGTH_LONG).show();
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.layout1), "You are too far away to collect this word!", Snackbar.LENGTH_LONG);
+                    TextView snackbarTV = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+
+                    snackbar.getView().setBackgroundColor(Color.DKGRAY);
+                    snackbarTV.setTextColor(Color.WHITE);
+                    snackbarTV.setTextSize(20);
+                    snackbar.show();
 
                 } else {
 
@@ -559,16 +566,6 @@ public class MapActivity
         });
     }
 
-    private void openGuessDialog(){
-        Button openguess = (Button) findViewById(R.id.guessSongFromMap);
-        openguess.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Toast.makeText(MapActivity.this, ":)", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
 
 }
 
