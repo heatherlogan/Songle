@@ -7,8 +7,6 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -18,29 +16,22 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ListView;
 
 import org.apache.commons.io.IOUtils;
-import org.w3c.dom.Text;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,12 +45,6 @@ import java.util.List;
 import java.util.Random;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -104,7 +89,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.game_menu);
+        setContentView(R.layout.activity_game);
 
         // Initialise databases and open
         data = new PlacemarkDatasource(this);
@@ -352,8 +337,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         /* ------------------------------------------ GET URLS ----------------------------------------------*/
 
-    // Choses a random song from the list of unplayed song and returns the int.
+
     private int generateRandomSong() {
+
+        // Choses a random song from the list of unplayed song and returns the int.
 
         List<Song> unplayedSongs = song_data.getUnplayedSongs();
 
@@ -364,8 +351,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-    // generates a kml based on the difficulty (map number) selected and the random song
     public String generateKmlUrl(int difficulty) {
+
+        // generates a kml based on the difficulty (map number) selected and the random song
 
         String songNo;
         if (randomSongNumber < 10) {
@@ -380,8 +368,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 + songNo + "/map" + difficulty + ".txt";
     }
 
-    // generates a url for lyrics based on the random song selected
+
     public String generateLyricUrl() {
+
+        // generates a url for lyrics based on the random song selected
 
         String songNo;
 
@@ -398,7 +388,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
        /* ----------------------------------------------- XML ----------------------------------------------*/
 
-    // passes feed URL, loadXml.. fetches and processes feed. returns result string
+    /* passes feed URL, loadXml.. fetches and processes feed. returns result string
+    *  Then generates a random song out of unplayed songs and generates URLs and begins download KML task.
+    */
     private class DownloadXmlTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urls) {
@@ -420,6 +412,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             randomSongNumber = generateRandomSong();
 
             // get map number passed from main activity and use this when getting the URL for kml file
+
             Intent intent = getIntent();
             int mapNum = intent.getIntExtra("mapNo", 0);
             Log.i(TAG, "got map number " + mapNum);
@@ -477,6 +470,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         ArrayList<Song> songsArrayList = new ArrayList<>();
 
         for (Song song : songs) {
+
+            // testing
             result.append(" \n");
             result.append(song.getNumber());
             result.append(" : " + song.getTitle() + " : " + song.getArtist() + " : " + song.getLink() + "");
@@ -698,7 +693,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 // User has already had a hint and cannot get another.
 
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
-                final View mView = getLayoutInflater().inflate(R.layout.request_hint2, null);
+                final View mView = getLayoutInflater().inflate(R.layout.not_unlocked_hint_dialog, null);
                 TextView tv = (TextView) mView.findViewById(R.id.guessTV2);
 
                 Button bttn = (Button) mView.findViewById(R.id.requestHintNo);
@@ -724,7 +719,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                         // User has not walked enough steps to get a hint.
                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
-                        final View mView = getLayoutInflater().inflate(R.layout.request_hint2, null);
+                        final View mView = getLayoutInflater().inflate(R.layout.not_unlocked_hint_dialog, null);
                         TextView tv = (TextView) mView.findViewById(R.id.guessTV2);
 
                         Button bttn = (Button) mView.findViewById(R.id.requestHintNo);
@@ -745,7 +740,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                     } else {
 
                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
-                        final View mView = getLayoutInflater().inflate(R.layout.request_hint, null);
+                        final View mView = getLayoutInflater().inflate(R.layout.unlocked_hint_dialog, null);
                         TextView tv = (TextView) mView.findViewById(R.id.guessTV2);
 
                         Button bttnYes = (Button) mView.findViewById(R.id.getHintYes);
@@ -813,7 +808,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                     {
 
                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
-                        final View mView = getLayoutInflater().inflate(R.layout.request_hint2, null);
+                        final View mView = getLayoutInflater().inflate(R.layout.not_unlocked_hint_dialog, null);
                         TextView tv = (TextView) mView.findViewById(R.id.guessTV2);
 
                         Button bttn = (Button) mView.findViewById(R.id.requestHintNo);
@@ -836,7 +831,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                         // User has played for over an hour and has unlocked a hint
 
                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
-                        final View mView = getLayoutInflater().inflate(R.layout.request_hint, null);
+                        final View mView = getLayoutInflater().inflate(R.layout.unlocked_hint_dialog, null);
                         TextView tv = (TextView) mView.findViewById(R.id.guessTV);
 
                         Button bttnYes = (Button) mView.findViewById(R.id.getHintYes);
@@ -1037,8 +1032,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     public void handleCorrectGuess(){
 
         final long timeToComplete = SystemClock.elapsedRealtime() - mChronometer.getBase();
+        final int stepsToComplete = numSteps;
         onStopTimer();
-        String timeString = "You completed game in " + formatTime(timeToComplete);
+
 
         AlertDialog.Builder m4Builder = new AlertDialog.Builder(GameActivity.this);
         View m4View = getLayoutInflater().inflate(R.layout.correct_song_dialog, null);
@@ -1047,14 +1043,20 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         TextView mTextViewArtist = (TextView) m4View.findViewById(R.id.displayArtist);
         TextView mTextViewLink = (TextView) m4View.findViewById(R.id.displaySongLink);
         TextView mTextViewTime = (TextView) m4View.findViewById(R.id.completedGameTime);
+        TextView mTextViewSteps = (TextView) m4View.findViewById(R.id.completedGameSteps);
 
         Song song = getSongInPlay();
 
         mTextViewSong.setText(song.getTitle());
         mTextViewArtist.setText(song.getArtist());
         mTextViewLink.setText(song.getLink());
-        mTextViewTime.setText(timeString);
+        mTextViewTime.setText(formatTime(timeToComplete));
 
+        if (numSteps != 0) {
+            mTextViewSteps.setText(" and " + stepsToComplete + " steps!");
+        } else {
+            mTextViewSteps.setText(" ");
+        }
 
         Log.i(TAG, "Remove " + song.getTitle() + "from unplayed songs");
         song_data.removeUnplayedSong(song.getNumber());

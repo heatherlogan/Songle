@@ -19,7 +19,7 @@ public class UnlockedSongsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.unlocked_songs_activity);
+        setContentView(R.layout.activity_unlocked_songs);
         ListView mListView = (ListView) findViewById(R.id.unlockedSongsListview);
 
         played_songs = new SongDatasource(this);

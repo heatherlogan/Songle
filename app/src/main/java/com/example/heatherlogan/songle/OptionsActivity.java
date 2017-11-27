@@ -1,9 +1,7 @@
 package com.example.heatherlogan.songle;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Path;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -12,11 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.IOException;
 
 public class OptionsActivity extends AppCompatActivity {
 
@@ -28,7 +22,7 @@ public class OptionsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.options_layout);
+        setContentView(R.layout.activity_options);
 
         song_data = new SongDatasource(this);
         scoreboard_data = new ScoreboardDatasource(this);
@@ -50,16 +44,25 @@ public class OptionsActivity extends AppCompatActivity {
         Button howtoplayBttn = findViewById(R.id.howtoplayBttn);
         howtoplayBttn.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View view){
+            public void onClick(View view) {
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(OptionsActivity.this);
-                View mView = getLayoutInflater().inflate(R.layout.how_to_play, null);
+                View mView = getLayoutInflater().inflate(R.layout.how_to_play_dialog, null);
 
                 mBuilder.setView(mView);
-                AlertDialog dialog = mBuilder.create();
+                final AlertDialog dialog = mBuilder.create();
                 dialog.show();
+
+                LinearLayout layout = mView.findViewById(R.id.howtolayout);
+                layout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
             }
-        } );
+        });
     }
+
 
 
     private void openUnlockedSongs() {
@@ -141,7 +144,6 @@ public class OptionsActivity extends AppCompatActivity {
             });
 
         }
-
 
 
 
