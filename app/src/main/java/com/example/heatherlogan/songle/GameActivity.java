@@ -1,5 +1,8 @@
 package com.example.heatherlogan.songle;
 
+/* Code for pedometer referenced from http://www.gadgetsaint.com/android/create-pedometer-step-counter-android/#.Whx0gbacau5
+* */
+
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -61,7 +64,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class GameActivity extends AppCompatActivity implements SensorEventListener {
+public class GameActivity extends AppCompatActivity implements SensorEventListener, StepListener {
 
     public static final String TAG = "Game Activity";
     public static final String URL = "http://www.inf.ed.ac.uk/teaching/courses/selp/data/songs/songs.txt";
@@ -78,10 +81,11 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     private long time;
 
     SensorManager mSensorManager;
+    private StepDetector mStepDetector;
     private Boolean running = false;
     private Boolean deviceHasStepCounter = false;
-
-    public Boolean gameinPlay = false;
+    private Sensor accel;
+    private int numSteps;
 
     private int randomSongNumber = 0;
 
@@ -95,12 +99,14 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     // changed when user gets hint, so they may not recieve more than one hint.
     private Boolean hasGotHint = false;
 
+   private TextView tvSteps;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.game_menu);
 
-        // database
+        // Initialise databases and open
         data = new PlacemarkDatasource(this);
         scoreboard_data = new ScoreboardDatasource(this);
         song_data = new SongDatasource(this);
@@ -117,25 +123,20 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         new DownloadXmlTask().execute(URL);
 
 
-        // for timer and pedometer
+        // Set up timer and pedometer.
+
         mChronometer = (Chronometer) findViewById(R.id.chronometer);
         onStartTimer();
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
+        accel = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mStepDetector = new StepDetector();
+        mStepDetector.registerListener(this);
+        tvSteps = (TextView) findViewById(R.id.stepCounterTV);
 
         // clear unplayed songs on each play, then add again on download xml
         // excluding songs in 'Played Songs' database.
 
         song_data.clearDatabase("unplayed_songs");
-
-        /* saves a game state to shared preferences so that on the main activity, new game or resume game can be used
-        * depending on whether a game has been completed or not. */
-
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
-        mEditor = mPreferences.edit();
-        mEditor.putBoolean("GameState", true);
-        mEditor.apply();
-        Log.i(TAG, "Updating game state to " + true);
 
         //buttons
         openMap();
@@ -148,14 +149,21 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onResume() {
         super.onResume();
+
+        /* Check if device has an accelerometer, if so enable step count features.
+        *  Otherwise, set to false */
+
         running = true;
-        Sensor countsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        Sensor countsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (countsensor != null) {
             deviceHasStepCounter = true;
             mSensorManager.registerListener(this, countsensor, SensorManager.SENSOR_DELAY_UI);
         } else {
             deviceHasStepCounter = false;
+            tvSteps.setText(R.string.StepCountNotAvailable);
         }
+
+        System.out.println("DEVICE HAS STEP COUNTER " + deviceHasStepCounter);
     }
 
     @Override
@@ -1003,12 +1011,22 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
-        TextView stepCounterTV = (TextView) findViewById(R.id.stepCounterTV);
-
-        if (running) {
-           stepCounterTV.setText(String.valueOf(sensorEvent.values[0]));
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+            mStepDetector.updateAccel(
+                    sensorEvent.timestamp, sensorEvent.values[0],
+                    sensorEvent.values[1], sensorEvent.values[2]);
         }
     }
+    @Override
+    public void step(long timeNs) {
+
+        numSteps++;
+        System.out.println(numSteps);
+
+        String s = "Steps: " + numSteps;
+        tvSteps.setText(s);
+    }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
