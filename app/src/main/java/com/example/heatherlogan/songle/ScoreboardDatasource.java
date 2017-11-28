@@ -13,7 +13,7 @@ public class ScoreboardDatasource {
     private MySQLiteHelper2 dbhelper;
     private SQLiteDatabase db;
 
-    private String[] cols = {MySQLiteHelper2.NAME, MySQLiteHelper2.LEVEL, MySQLiteHelper2.TIME } ;
+    private String[] cols = {MySQLiteHelper2.NAME, MySQLiteHelper2.LEVEL, MySQLiteHelper2.TIME, MySQLiteHelper2.STEPS } ;
 
     public ScoreboardDatasource(Context context) {
         dbhelper = new MySQLiteHelper2(context);
@@ -33,6 +33,7 @@ public class ScoreboardDatasource {
         cv.put(MySQLiteHelper2.NAME, user.getUserName());
         cv.put(MySQLiteHelper2.LEVEL, user.getUserLevel());
         cv.put(MySQLiteHelper2.TIME,  user.getUserTime());
+        cv.put(MySQLiteHelper2.STEPS, user.getUserSteps());
 
         db.insert(MySQLiteHelper2.SCOREBOARD_TABLE, null, cv);
 
@@ -64,6 +65,7 @@ public class ScoreboardDatasource {
         u.setUserName(cursor.getString(0));
         u.setUserLevel(cursor.getString(1));
         u.setUserTime(Integer.parseInt(cursor.getString(2)));
+        u.setUserSteps(Integer.parseInt(cursor.getString(3)));
 
         return u;
     }

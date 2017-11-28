@@ -30,9 +30,9 @@ public class ScoreboardAdapter extends ArrayAdapter<User> {
         String name = getItem(position).getUserName();
         String level = getItem(position).getUserLevel();
         int time = getItem(position).getUserTime();
-        // int steps = getItem(position).getUserSteps();
+        int steps = getItem(position).getUserSteps();
 
-        User u = new User(name, level, time);
+        User u = new User(name, level, time, steps);
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
@@ -40,13 +40,12 @@ public class ScoreboardAdapter extends ArrayAdapter<User> {
         TextView tvName = (TextView) convertView.findViewById(R.id.nameTextView);
         TextView tvLevel = (TextView) convertView.findViewById(R.id.levelTextView);
         TextView tvTime = (TextView) convertView.findViewById(R.id.timeTextView);
-       //  TextView tvSteps = (TextView) convertView.findViewById(R.id.stepsTextView);
+        TextView tvSteps = (TextView) convertView.findViewById(R.id.stepsTextView);
 
         tvName.setText(name);
         tvLevel.setText(level);
         tvTime.setText(formatTime(time));
-      //  tvTime.setText(Integer.toString(steps));
-
+        tvSteps.setText(Integer.toString(steps));
 
         return convertView;
 

@@ -29,7 +29,7 @@
             android:layout_height="40sp"
             android:textSize="15sp"
             android:textColor="@color/blue"
-            android:text="tv"
+            android:text="level"
             android:layout_weight="20"/>
 
         <TextView
@@ -38,15 +38,17 @@
             android:layout_height="40sp"
             android:textSize="15sp"
             android:textColor="@color/blue"
-            android:text="tv"
+            android:text="time"
             android:layout_weight="10"/>
 
         <TextView
             android:id="@+id/stepsTextView"
             android:layout_width="70dp"
             android:layout_height="40sp"
-            android:text="tv"
+            android:gravity="left"
+            android:text="steps"
             android:textSize="15sp"
+            android:paddingLeft="15dp"
             android:textColor="@color/blue"
             android:layout_weight="10"/>
 

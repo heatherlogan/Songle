@@ -17,7 +17,7 @@ public class MySQLiteHelper2 extends SQLiteOpenHelper {
     public static final String NAME = "user_name";
     public static final String LEVEL = "user_level";
     public static final String TIME = "user_time";
-   // public static final String STEPS = "user_steps";
+    public static final String STEPS = "user_steps";
 
     public static final String UNPLAYED_SONGS_TABLE = "unplayed_songs";
     public static final String ID3 = "unplayed_song_id";
@@ -32,7 +32,7 @@ public class MySQLiteHelper2 extends SQLiteOpenHelper {
     public static final String PLAYED_SONG_ARTIST = "played_song_artist";
     public static final String PLAYED_SONG_TITLE = "played_song_title";
 
-    private static final int D_VERSION = 4;
+    private static final int D_VERSION = 5;
     private static final String DB_NAME = "scoreboard_info.db";
 
     private static final String DB_CREATE_SCOREBOARD =
@@ -40,7 +40,8 @@ public class MySQLiteHelper2 extends SQLiteOpenHelper {
                     + ID + " integer primary key , "
                     + NAME + " text, "
                     + LEVEL + " text, "
-                    + TIME + " text);";
+                    + TIME + " text, "
+                    + STEPS + " text);";
 
 
     private static final String DB_CREATE_UNPLAYED_SONGS =

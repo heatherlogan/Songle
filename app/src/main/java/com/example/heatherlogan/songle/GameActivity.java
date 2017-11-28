@@ -39,6 +39,7 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.List;
@@ -118,10 +119,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         mStepDetector.registerListener(this);
         tvSteps = (TextView) findViewById(R.id.stepCounterTV);
 
-        // clear unplayed songs on each play, then add again on download xml
-        // excluding songs in 'Played Songs' database.
-
-        song_data.clearDatabase("unplayed_songs");
 
         //buttons
         openMap();
@@ -435,7 +432,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             new DownloadKmlTask().execute(kmlURL);
 
         }
-
     }
 
     private String loadXmlFromNetwork(String urlString) throws XmlPullParserException, IOException {
@@ -464,10 +460,23 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 stream.close();
             }
         }
+        // clear unplayed songs on each play, then add again on download xml
+        // excluding songs in 'Played Songs' database.
+
+        song_data.clearDatabase("unplayed_songs");
+        List<Song> unplayed_s = song_data.getUnplayedSongs();
+        System.out.println("Unplayed cleared: ");
+        for (Song p : unplayed_s){
+            System.out.println(p.getNumber() + " ");
+        }
+
 
         List<Song> played_songs = song_data.getPlayedSongs();
 
         ArrayList<Song> songsArrayList = new ArrayList<>();
+
+
+
 
         for (Song song : songs) {
 
@@ -489,12 +498,12 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         List<Song> playable = song_data.getUnplayedSongs();
 
-        System.out.print("Playable songs: ");
+        System.out.println("Playable songs after : ");
         for (Song p : playable) {
             System.out.print(p.getNumber() + " ");
         }
 
-        System.out.print("Played songs: ");
+        System.out.println("Played songs: ");
         for (Song p : played_songs) {
             System.out.print(p.getNumber() + " ");
         }
@@ -1083,7 +1092,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onClick(View view) {
 
-             addToScoreBoard(timeToComplete);
+             addToScoreBoard(timeToComplete, stepsToComplete);
              dialog4.dismiss();
 
              List<Song> unplayedSongs = song_data.getUnplayedSongs();
@@ -1138,9 +1147,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         });
     }
 
-    public void addToScoreBoard(long timeToComplete){
+    public void addToScoreBoard(long timeToComplete, int stepsToComplete){
 
         final int time = (int) timeToComplete;
+        final int steps = stepsToComplete;
 
         AlertDialog.Builder m2Builder = new AlertDialog.Builder(GameActivity.this);
         View m2View = getLayoutInflater().inflate(R.layout.enter_name_dialog, null);
@@ -1152,7 +1162,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         Intent intent = getIntent();
         final int mapNo = intent.getIntExtra("mapNo", 0);
 
-
         m2Builder.setView(m2View);
         final AlertDialog dialog2 = m2Builder.create();
         dialog2.show();
@@ -1163,20 +1172,50 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                 String name = userName.getText().toString();
                 String level = mapToStringDifficulty(mapNo);
-                int time1 = time;
-                int steps = 1000;
 
-                User user = new User(name, level, time1);
-
-                System.out.println(user.getUserName() +"  "+ user.getUserLevel()+"  "+  user.getUserTime());
+                User user = new User(name, level, time, steps);
 
                 Log.i(TAG, "adding to scoreboard");
 
                 if ((name.length() != 0)) {
+
                     scoreboard_data.addToScoreboard(user);
+
+                    if (hasMaxScore(user)){
+
+                        AlertDialog.Builder m4Builder = new AlertDialog.Builder(GameActivity.this);
+                        View m4View = getLayoutInflater().inflate(R.layout.highest_score_dialog, null);
+
+                            String str = "Congratulations " + user.getUserName() +
+                                    "!\nYou have a new best time with " + formatTime(time) + "!";
+                            TextView textView = m4View.findViewById(R.id.congratsTv);
+                            textView.setText(str);
+
+                        Button cont = m4View.findViewById(R.id.congratsContinue);
+
+                        m4Builder.setView(m4View);
+                        final AlertDialog dialog4 = m4Builder.create();
+                        dialog4.show();
+
+                        cont.setOnClickListener(new View.OnClickListener(){
+                            @Override
+                            public void onClick(View view){
+                                Intent i = new Intent(GameActivity.this, ScoreboardActivity.class);
+                                startActivity(i);
+                                dialog2.dismiss();
+                                dialog4.dismiss();
+                            }
+
+                        });
+
+
+                    } else {
+
                     Intent i = new Intent(GameActivity.this, ScoreboardActivity.class);
                     startActivity(i);
                     dialog2.dismiss();
+                    }
+
 
                 } else {
                     Toast.makeText(GameActivity.this, "Enter your name", Toast.LENGTH_LONG).show();
@@ -1219,5 +1258,31 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 break;
         }
         return difficulty;
+    }
+
+    public boolean hasMaxScore(User user){
+
+        ArrayList<User> scoreboard = new ArrayList<>(scoreboard_data.getScoreboard());
+
+        int nums = scoreboard.size();
+        System.out.println(nums);
+
+        Collections.sort(scoreboard, User.UserComparator);
+
+        User highestUser = scoreboard.get(0);
+
+        System.out.println("USER " + user.getUserName() + " " + user.getUserTime());
+        System.out.println("HIGHEST USER " + highestUser.getUserName() + " " + highestUser.getUserTime());
+
+        if ((user.getUserName().equals(highestUser.getUserName()))&&(user.getUserTime()==user.getUserTime())){
+
+            Log.i(TAG, "User has highest score");
+            return true;
+
+        } else {
+
+            return false;
+        }
+
     }
 }
