@@ -10,7 +10,7 @@
         android:id="@+id/textView3"
         android:layout_width="match_parent"
         android:layout_height="60sp"
-        android:text="Collected Words"
+        android:text="@string/collectedwords"
         android:textSize="35dp"
         android:padding="10dp"
         android:background="@color/blue"
@@ -22,8 +22,6 @@
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="50sp"
-        android:text="Collected Words"
-        android:textSize="20dp"
         android:textColor="@color/white"
         android:textAlignment="center"
         android:textStyle="bold"
@@ -32,7 +30,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Word"
+            android:text="@string/word"
             android:textAlignment="center"
             android:gravity="center"
             android:textSize="20sp"
@@ -46,21 +44,22 @@
             android:gravity="center"
             android:textSize="15sp"
             android:textColor="@color/blue"
-            android:text="Line: Position"
+            android:text="@string/lineposition"
             android:layout_weight="70"
-            android:paddingRight="10dp"/>
+            android:paddingRight="10dp"
+            android:paddingEnd="10dp"/>
         </LinearLayout>
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="450dp"
-        android:layout_weight="0.2"
+        android:layout_weight="0.05"
         android:id="@+id/collectedwordslistview"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="0.8"
+        android:layout_weight="0.95"
         android:orientation="horizontal"
         android:padding="25dp">
 
@@ -70,12 +69,12 @@
             android:textColor="@color/lightGrey"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Go back"
+            android:text="@string/go_back"
             android:layout_gravity="center"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:background="@drawable/mybutton"
             android:layout_marginRight="5dp"
-            />
+            android:layout_marginEnd="5dp"/>
 
     </LinearLayout>
 

@@ -21,5 +21,11 @@
     <string name="how2">Very easy shows all of the word locations and has very interesting, interesting/ not boring and boring markers. Easy shows all of the word locations and has interesting/not boring and boring markers. Medium shows 75% of the word locations and has interesting, not boring and boring markers. Hard shows 50% of the word locations and has not boring and boring markers. Very hard shows 25% of the word locations and all markers are unclassified.</string>
     <string name="howtoplay2">Very easy shows all of the word locations and has very interesting, interesting/ not boring and boring markers. Easy shows all of the word locations and has interesting/not boring and boring markers. Medium shows 75%% of the word locations and has interesting, not boring and boring markers. Hard shows 50%% of the word locations and has not boring and boring markers. Very hard shows 25%% of the word locations and all markers are unclassified.</string>
     <string name="StepCountNotAvailable">Step counter not available</string>
+    <string name="gethint">Get Hint</string>
+    <string name="giveup">Give Up</string>
+    <string name="collectedwords">Collected Words</string>
+    <string name="word">Word</string>
+    <string name="lineposition">Line: Position</string>
+    <string name="go_back">Go back</string>
 </resources>
 

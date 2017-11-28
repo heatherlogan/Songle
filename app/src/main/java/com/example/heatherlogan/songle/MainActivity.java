@@ -3,7 +3,9 @@ package com.example.heatherlogan.songle;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.List;
 import java.net.URL;
 import java.net.HttpURLConnection;
@@ -53,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         MapsInitializer.initialize(getApplicationContext());
 
+        System.out.println("is network available: " + isNetworkAvailable());
+
+        checkServices();
+
         if (checkServices()) {
             resumeGame();
             newGame();
@@ -68,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             data.open();
             word_data.open();
 
-        } catch (Exception e ){
+        } catch (Exception e) {
             Log.e(TAG, "DATABASE EXCEPTION");
         }
 
@@ -82,35 +89,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-                SharedPreferences.Editor editor = mPreferences.edit();
-                Boolean gameInPlay = mPreferences.getBoolean("GameState", false);
-
-                Log.i(TAG, "got gamestate from shared pref" + gameInPlay);
-
-                if (gameInPlay == true) {
-
-                    // open game in its last state
-
-                    Toast.makeText(MainActivity.this, "game is in play", Toast.LENGTH_LONG).show();
-
-
-                } else {
-
-                    // display dialog asking to start a new game
-
-                    Toast.makeText(MainActivity.this, "game is not in play", Toast.LENGTH_LONG).show();
-                }
-
+                Intent i = new Intent(MainActivity.this, GameActivity.class);
+                startActivity(i);
             }
         });
     }
 
-    private void newGame(){
+    private void newGame() {
         Button newGameButton = findViewById(R.id.newGameButton);
-        newGameButton.setOnClickListener(new View.OnClickListener(){
+        newGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
+            public void onClick(View view) {
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
                 View mView = getLayoutInflater().inflate(R.layout.new_game_dialog, null);
 
@@ -121,11 +110,11 @@ public class MainActivity extends AppCompatActivity {
                 final AlertDialog dialog = mBuilder.create();
                 dialog.show();
 
-                yesButton.setOnClickListener(new View.OnClickListener(){
+                yesButton.setOnClickListener(new View.OnClickListener() {
 
                     // Choosing to start a new game brings up dialog to choose difficulty level
                     @Override
-                    public void onClick(View view){
+                    public void onClick(View view) {
                         AlertDialog.Builder m2Builder = new AlertDialog.Builder(MainActivity.this);
                         View m2View = getLayoutInflater().inflate(R.layout.select_difficulty_dialog, null);
 
@@ -142,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 RadioButton radiob = (RadioButton) radioGroup.findViewById(checkedId);
 
-                                switch(radiob.getId()){
+                                switch (radiob.getId()) {
                                     case R.id.veryEasyRB:
                                         difficultyChoice = 5;
                                         break;
@@ -162,9 +151,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         //Enter button in Select Difficulty Level launches new game
-                        playButton7.setOnClickListener(new View.OnClickListener(){
+                        playButton7.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onClick(View view){
+                            public void onClick(View view) {
 
                                 //clear previous marker and collected words database on new game
                                 Log.i(TAG, "cleared database");
@@ -189,9 +178,9 @@ public class MainActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
-                noButton.setOnClickListener(new View.OnClickListener(){
+                noButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view){
+                    public void onClick(View view) {
                         dialog.dismiss();
                     }
                 });
@@ -207,9 +196,9 @@ public class MainActivity extends AppCompatActivity {
     public void openOptions() {
 
         Button optionsBttn = (Button) findViewById(R.id.optionsButton);
-        optionsBttn.setOnClickListener(new View.OnClickListener(){
+        optionsBttn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
+            public void onClick(View view) {
                 Intent openOptions = new Intent(MainActivity.this, OptionsActivity.class);
                 startActivity(openOptions);
             }
@@ -223,32 +212,31 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkServices() {
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
         if (available == ConnectionResult.SUCCESS) {
+
+            System.out.println("Google API avalable");
+
             return true;
+
         } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
+
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
         } else {
+            System.out.println("Google API not avalable");
             return false;
         }
         return false;
     }
 
-    private boolean isNetworkAvailable(){
+    private boolean isNetworkAvailable() {
 
         ConnectivityManager conMan = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeInfo = conMan.getActiveNetworkInfo();
         return activeInfo != null && activeInfo.isConnected();
     }
 
-    public void loadPage() {
-        if (checkServices() && isNetworkAvailable()) {
 
-            Log.i(TAG, "network ok ");
-
-        } else {
-           getResources().getString(R.string.connection_error);
-        }
-    }
 
 }
+
 

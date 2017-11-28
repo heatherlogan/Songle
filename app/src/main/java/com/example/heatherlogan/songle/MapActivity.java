@@ -198,10 +198,20 @@ public class MapActivity
 
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-            double lat = mLastLocation.getLatitude();
-            double lon = mLastLocation.getLongitude();
+            LatLng currentLo;
 
-            LatLng currentLo = new LatLng(lat, lon);
+            if (mLastLocation!=null) {
+
+                double lat = mLastLocation.getLatitude();
+                double lon = mLastLocation.getLongitude();
+
+                currentLo = new LatLng(lat, lon);
+            } else {
+                double lat = 55.944088;
+                double lon = -3.187219;
+
+                currentLo = new LatLng(lat, lon);
+            }
 
             currentLocationMarker = gMap.addMarker(new MarkerOptions().position(currentLo).title("Your Location")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));

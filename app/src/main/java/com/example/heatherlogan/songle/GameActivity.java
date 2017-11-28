@@ -16,10 +16,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -92,10 +94,12 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        // Initialise databases and open
+        // Initialise and opens databases
         data = new PlacemarkDatasource(this);
         scoreboard_data = new ScoreboardDatasource(this);
         song_data = new SongDatasource(this);
+
+        System.out.println("is location enabled: " + isLocationEnabled(this));
 
         try {
             data.open();
@@ -113,6 +117,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         mChronometer = (Chronometer) findViewById(R.id.chronometer);
         onStartTimer();
+
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accel = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mStepDetector = new StepDetector();
@@ -171,6 +176,30 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         mEditor.apply();
         Log.i(TAG, "Updating game state to " + false);
     }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+
+        savedInstanceState.putLong("Chronotime", mChronometer.getBase());
+        savedInstanceState.putString("stepSting", "Steps: " + numSteps );
+
+        Log.i("Instance State", "onSaveInstanceState");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if((savedInstanceState !=null) && savedInstanceState.containsKey("Chronotime")) {
+            mChronometer.setBase(savedInstanceState.getLong("Chronotime"));
+        }
+        tvSteps.setText(savedInstanceState.getString("stepString"));
+
+        Log.i("Instance state", "onRestoreInstanceState");
+    }
+
 
         /* ----------------------------------------------- BUTTONS ----------------------------------------------*/
 
@@ -365,7 +394,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 + songNo + "/map" + difficulty + ".txt";
     }
 
-
     public String generateLyricUrl() {
 
         // generates a url for lyrics based on the random song selected
@@ -464,46 +492,57 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         // excluding songs in 'Played Songs' database.
 
         song_data.clearDatabase("unplayed_songs");
+
         List<Song> unplayed_s = song_data.getUnplayedSongs();
+
         System.out.println("Unplayed cleared: ");
         for (Song p : unplayed_s){
             System.out.println(p.getNumber() + " ");
         }
 
-
         List<Song> played_songs = song_data.getPlayedSongs();
+
+        ArrayList<Song> temporary_list = new ArrayList<>();
 
         ArrayList<Song> songsArrayList = new ArrayList<>();
 
-
-
+        /*loops through songs parsed from xml document, adds to a list then loops through list, checking
+        whether song is in played list and adds to unplayed database if not.
+        * */
 
         for (Song song : songs) {
-
             // testing
             result.append(" \n");
             result.append(song.getNumber());
             result.append(" : " + song.getTitle() + " : " + song.getArtist() + " : " + song.getLink() + "");
 
-            // save list of songs to shared preferences
             Song unplayed = new Song(song.getNumber(), song.getArtist(), song.getTitle());
 
-            // if song is not in played songs; add to unplayed songs database
-            if (!(song_data.songExistsInPlayed(unplayed.getNumber()))) {
-                song_data.addUnplayedSong(unplayed);
-            }
-
-            songsArrayList.add(song);
+             songsArrayList.add(song);
         }
 
-        List<Song> playable = song_data.getUnplayedSongs();
 
-        System.out.println("Playable songs after : ");
-        for (Song p : playable) {
+        System.out.print("All songs: ");
+        for (Song p : songsArrayList) {
+            if ((song_data.songExistsInPlayed(p.getNumber()))){
+                System.out.print("playedsongs contains " + p.getNumber());
+            } else {
+                song_data.addUnplayedSong(p);
+            }
             System.out.print(p.getNumber() + " ");
         }
 
-        System.out.println("Played songs: ");
+        System.out.println("");
+        List<Song> unplayed_songs = song_data.getUnplayedSongs();
+
+        System.out.println("Unplayed Songs ");
+        for (Song s : unplayed_songs){
+            System.out.print(s.getNumber() + " ");
+
+
+        }
+        System.out.println("");
+        System.out.print("Played songs: ");
         for (Song p : played_songs) {
             System.out.print(p.getNumber() + " ");
         }
@@ -960,7 +999,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     public void onStartTimer() {
 
         mChronometer.setBase(SystemClock.elapsedRealtime());
+
         mChronometer.start();
+
 
     }
 
@@ -1285,4 +1326,31 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         }
 
     }
+
+
+    public static boolean isLocationEnabled(Context context) {
+            int locationMode = 0;
+            String locationProviders;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+                try {
+                    locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+
+                } catch (Settings.SettingNotFoundException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+
+                return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+
+            }else{
+                locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+                return !TextUtils.isEmpty(locationProviders);
+            }
+
+
+    }
+
+
+
 }
