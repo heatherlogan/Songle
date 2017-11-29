@@ -347,8 +347,9 @@ public class MapActivity
 
          }
 
+
     // when clicked, marker is remove marker from map and database, corresponding word displayed and added to Collected words database.
-    private void setOnClickMarker() {
+     private void setOnClickMarker() {
 
         gMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 
@@ -379,36 +380,43 @@ public class MapActivity
                         return false;
 
                     } else {
-                        // for matching marker to word in lyrics
 
-                        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(MapActivity.this);
-                        SharedPreferences.Editor editor = mPreferences.edit();
-                        String lyricURL = mPreferences.getString("lyricUrl_key", "");
-
-                        String position = m.getTitle();
-                        TaskParameters params = new TaskParameters(lyricURL, position);
-
-                        new FindWordInLyrics().execute(params);
-
-                        m.remove();
-                        data.deleteMarker(new Placemark(m.getTitle(), m.getSnippet(), m.getPosition().longitude + "," + m.getPosition().latitude + ",0"));
-
-                        // for testing
-                        List<Placemark> pms = data.getMarkers();
-                        StringBuilder result = new StringBuilder();
-
-                        int count = 0;
-                        for (Placemark placemark : pms) {
-                            count++;
-                            // result.append(" \n");
-                            // result.append(" : " + placemark.getName() + " : " + placemark.getCoordinates());
-                        }
-                        System.out.println("Number of markers: " + count);
+                        collectMarker(m);
                     }
                 }
                 return false;
             }
         });
+    }
+
+    public void collectMarker(Marker m){
+
+        // for matching marker to word in lyrics
+
+        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(MapActivity.this);
+        SharedPreferences.Editor editor = mPreferences.edit();
+        String lyricURL = mPreferences.getString("lyricUrl_key", "");
+
+        String position = m.getTitle();
+        TaskParameters params = new TaskParameters(lyricURL, position);
+
+        new FindWordInLyrics().execute(params);
+
+        m.remove();
+        data.deleteMarker(new Placemark(m.getTitle(), m.getSnippet(), m.getPosition().longitude + "," + m.getPosition().latitude + ",0"));
+
+        // for testing
+        List<Placemark> pms = data.getMarkers();
+        StringBuilder result = new StringBuilder();
+
+        int count = 0;
+        for (Placemark placemark : pms) {
+            count++;
+            // result.append(" \n");
+            // result.append(" : " + placemark.getName() + " : " + placemark.getCoordinates());
+        }
+        System.out.println("Number of markers: " + count);
+
     }
 
     /*------------------------------------------ Lyric Parsing ---------------------------------------------*/

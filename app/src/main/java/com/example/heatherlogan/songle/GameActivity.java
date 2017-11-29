@@ -59,9 +59,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     public static String kmlURL;
     public static String lyricURL;
 
-    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-
     private Location mLastLocation;
     GoogleApiClient mGoogleApiClient;
 
@@ -167,7 +164,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         // keep running when app is not open?
     }
 
-
     protected void onDestroy() {
         super.onDestroy();
         mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
@@ -176,7 +172,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         mEditor.apply();
         Log.i(TAG, "Updating game state to " + false);
     }
-
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState){
@@ -367,12 +362,18 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     private int generateRandomSong() {
 
         // Choses a random song from the list of unplayed song and returns the int.
+        // Due to problem where only songs >10 are removed from unplayed database,
+        // If statements checks if song is in database.
 
         List<Song> unplayedSongs = song_data.getUnplayedSongs();
 
         Song sn = unplayedSongs.get((new Random()).nextInt(unplayedSongs.size()));
 
-        System.out.println("Random Song Number " + sn.getNumber());
+        if (song_data.songExistsInPlayed(sn.getNumber())){
+            generateRandomSong();
+        }
+
+        Log.i(TAG, "Generated song number " + sn.getNumber());
         return (Integer.parseInt(sn.getNumber()));
 
     }
@@ -502,8 +503,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         List<Song> played_songs = song_data.getPlayedSongs();
 
-        ArrayList<Song> temporary_list = new ArrayList<>();
-
         ArrayList<Song> songsArrayList = new ArrayList<>();
 
         /*loops through songs parsed from xml document, adds to a list then loops through list, checking
@@ -521,11 +520,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
              songsArrayList.add(song);
         }
 
-
         System.out.print("All songs: ");
         for (Song p : songsArrayList) {
             if ((song_data.songExistsInPlayed(p.getNumber()))){
-                System.out.print("playedsongs contains " + p.getNumber());
+                System.out.print("(" + p.getNumber() +")");
             } else {
                 song_data.addUnplayedSong(p);
             }
@@ -546,6 +544,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         for (Song p : played_songs) {
             System.out.print(p.getNumber() + " ");
         }
+
+        // An arraylist of songs is saved to shared preferences to be accessed in map activity when
+        // matching marker to corresponding word.
 
         saveSongList(songsArrayList);
         loadSongList();
@@ -1002,7 +1003,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         mChronometer.start();
 
-
     }
 
     public void onStopTimer() {
@@ -1062,11 +1062,11 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                     sensorEvent.values[1], sensorEvent.values[2]);
         }
     }
+
     @Override
     public void step(long timeNs) {
 
         numSteps++;
-        System.out.println(numSteps);
 
         String s = "Steps: " + numSteps;
         tvSteps.setText(s);
@@ -1089,11 +1089,11 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         AlertDialog.Builder m4Builder = new AlertDialog.Builder(GameActivity.this);
         View m4View = getLayoutInflater().inflate(R.layout.correct_song_dialog, null);
 
-        TextView mTextViewSong = (TextView) m4View.findViewById(R.id.displaySong);
-        TextView mTextViewArtist = (TextView) m4View.findViewById(R.id.displayArtist);
-        TextView mTextViewLink = (TextView) m4View.findViewById(R.id.displaySongLink);
-        TextView mTextViewTime = (TextView) m4View.findViewById(R.id.completedGameTime);
-        TextView mTextViewSteps = (TextView) m4View.findViewById(R.id.completedGameSteps);
+        TextView mTextViewSong = m4View.findViewById(R.id.displaySong);
+        TextView mTextViewArtist=m4View.findViewById(R.id.displayArtist);
+        TextView mTextViewLink = m4View.findViewById(R.id.displaySongLink);
+        TextView mTextViewTime = m4View.findViewById(R.id.completedGameTime);
+        TextView mTextViewSteps= m4View.findViewById(R.id.completedGameSteps);
 
         Song song = getSongInPlay();
 
@@ -1308,12 +1308,12 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         int nums = scoreboard.size();
         System.out.println(nums);
 
+
+        // sorts arraylist by time, returns first in list and compares with current user.
+
         Collections.sort(scoreboard, User.UserComparator);
 
         User highestUser = scoreboard.get(0);
-
-        System.out.println("USER " + user.getUserName() + " " + user.getUserTime());
-        System.out.println("HIGHEST USER " + highestUser.getUserName() + " " + highestUser.getUserTime());
 
         if ((user.getUserName().equals(highestUser.getUserName()))&&(user.getUserTime()==user.getUserTime())){
 
@@ -1326,7 +1326,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         }
 
     }
-
 
     public static boolean isLocationEnabled(Context context) {
             int locationMode = 0;
