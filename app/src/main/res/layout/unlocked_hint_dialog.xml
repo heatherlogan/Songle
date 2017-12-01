@@ -8,7 +8,7 @@
               android:weightSum="1">
 
     <TextView
-        android:id="@+id/guessTV"
+        android:id="@+id/gothintTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/blue"
@@ -23,7 +23,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:layout_below="@id/guessTV"
+        android:layout_below="@id/gothintTv"
         android:layout_marginTop="5dp"
         android:orientation="horizontal"
         android:padding="15dp"

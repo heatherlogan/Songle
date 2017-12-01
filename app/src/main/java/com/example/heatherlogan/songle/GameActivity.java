@@ -7,6 +7,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,6 +18,7 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -81,10 +83,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     private SharedPreferences mPreferences;
     private SharedPreferences.Editor mEditor;
 
-    // changed when user gets hint, so they may not recieve more than one hint.
+    // changed when user gets hint, so they may not receive more than one hint.
     private Boolean hasGotHint = false;
 
-   private TextView tvSteps;
+    private TextView tvSteps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +130,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         guessSong();
         openGetHint();
         giveUp();
+
     }
 
     @Override
@@ -283,76 +286,16 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             // ask if user wants to quit when give up button is clicked
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
-                View mView = getLayoutInflater().inflate(R.layout.give_up_dialog, null);
-
-                Button yesGiveUp = mView.findViewById(R.id.yesGiveUp);
-                Button keepPlaying = (Button) mView.findViewById(R.id.keepPlaying);
-
-                mBuilder.setView(mView);
-                final AlertDialog dialog = mBuilder.create();
-                dialog.show();
-
-                yesGiveUp.setOnClickListener(new View.OnClickListener() {
-                    //reveal song info when gave up
-                    @Override
-                    public void onClick(View view) {
-                        AlertDialog.Builder m2Builder = new AlertDialog.Builder(GameActivity.this);
-                        View m2View = getLayoutInflater().inflate(R.layout.on_quit_dialog, null);
-
-                        // get info to display the song details.
-
-                        Song currentSong = getSongInPlay();
-                        TextView giveUpSong = (TextView) m2View.findViewById(R.id.giveUpSongTV);
-                        String answer1 = "The song was: " + currentSong.getTitle();
-                        giveUpSong.setText(answer1);
-                        TextView giveUpArtist = (TextView) m2View.findViewById(R.id.giveUpArtistTV);
-                        String answer2 = "By: " + currentSong.getArtist();
-                        giveUpArtist.setText(answer2);
-
-                        m2Builder.setView(m2View);
-                        final AlertDialog dialog2 = m2Builder.create();
-                        dialog2.show();
-
-                        mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
-                        mEditor = mPreferences.edit();
-                        mEditor.putBoolean("GameState", false);
-                        mEditor.apply();
-                        Log.i(TAG, "Updating game state to " + false);
-
-                        // remove song from unplayed songs and add to unplayed songs.
-
-                        Log.i(TAG, "Remove " + currentSong.getTitle() + "from unplayed songs");
-                        song_data.removeUnplayedSong(currentSong.getNumber());
-
-                        Log.i(TAG, "Add " + currentSong.getTitle() + " to played songs");
-                        song_data.addPlayedSong(new Song(currentSong.getNumber(), currentSong.getArtist(), currentSong.getTitle()));
-
-
-                        // button for new game or remove?
-
-                        Button goBackHome = (Button) m2View.findViewById(R.id.backHomeQuit);
-                        goBackHome.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent gohome = new Intent(GameActivity.this, MainActivity.class);
-                                startActivity(gohome);
-                            }
-                        });
-
-                    }
-                });
-
-                keepPlaying.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // replace later with close
-                        dialog.dismiss();
-                    }
-                });
-
+                        handleGiveUp();
             }
         });
+
+    }
+
+    @Override
+    public void onBackPressed(){
+
+        handleGiveUp();
 
     }
 
@@ -361,7 +304,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
     private int generateRandomSong() {
 
-        // Choses a random song from the list of unplayed song and returns the int.
+        // Chooses a random song from the list of unplayed song and returns the int.
         // Due to problem where only songs >10 are removed from unplayed database,
         // If statements checks if song is in database.
 
@@ -537,7 +480,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         for (Song s : unplayed_songs){
             System.out.print(s.getNumber() + " ");
 
-
         }
         System.out.println("");
         System.out.print("Played songs: ");
@@ -545,7 +487,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             System.out.print(p.getNumber() + " ");
         }
 
-        // An arraylist of songs is saved to shared preferences to be accessed in map activity when
+        // A list of songs is saved to shared preferences to be accessed in map activity when
         // matching marker to corresponding word.
 
         saveSongList(songsArrayList);
@@ -747,7 +689,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                 Button bttn = (Button) mView.findViewById(R.id.requestHintNo);
 
-                tv.setText("You have already had a hint!");
+                String h = "You have already had a hint!";
+                tv.setText(h);
 
                 mBuilder.setView(mView);
                 final AlertDialog dialog = mBuilder.create();
@@ -773,7 +716,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                         Button bttn = (Button) mView.findViewById(R.id.requestHintNo);
 
-                        tv.setText("You need to have walked at least 2000 steps to get a hint!");
+                        String s = "You must walk " + (2000 - steps) + " more steps to get a hint!";
+                        tv.setText(s);
 
                         mBuilder.setView(mView);
                         final AlertDialog dialog = mBuilder.create();
@@ -790,12 +734,13 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
                         final View mView = getLayoutInflater().inflate(R.layout.unlocked_hint_dialog, null);
-                        TextView tv = (TextView) mView.findViewById(R.id.guessTV2);
+                        TextView tv = (TextView) mView.findViewById(R.id.gothintTv);
 
                         Button bttnYes = (Button) mView.findViewById(R.id.getHintYes);
                         Button bttnNo = (Button) mView.findViewById(R.id.getHintNo);
 
-                        tv.setText("You have walked " + steps + " and have unlocked a hint!");
+                        String str = "You have walked " + steps + " steps and have unlocked a hint!";
+                        tv.setText(str);
 
                         mBuilder.setView(mView);
                         final AlertDialog dialog = mBuilder.create();
@@ -813,11 +758,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                                 tv2.setText(hint2);
 
-                                m2Builder.setView(mView);
+                                m2Builder.setView(m2View);
                                 final AlertDialog dialog2 = m2Builder.create();
                                 dialog2.show();
-
-                                dialog.dismiss();
 
                                 final Timer t = new Timer();
                                 t.schedule(new TimerTask() {
@@ -862,7 +805,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                         Button bttn = (Button) mView.findViewById(R.id.requestHintNo);
 
-                        tv.setText("You must have played for 1 hour to get a hint!");
+
+                        String str = "You must have played for 1 hour to get a hint!";
+                        tv.setText(str);
 
                         mBuilder.setView(mView);
                         final AlertDialog dialog = mBuilder.create();
@@ -881,12 +826,12 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
                         final View mView = getLayoutInflater().inflate(R.layout.unlocked_hint_dialog, null);
-                        TextView tv = (TextView) mView.findViewById(R.id.guessTV);
+                        TextView tv = (TextView) mView.findViewById(R.id.gothintTv);
 
                         Button bttnYes = (Button) mView.findViewById(R.id.getHintYes);
                         Button bttnNo = (Button) mView.findViewById(R.id.getHintNo);
 
-                        String s = "You have played (time) and have unlocked a hint";
+                        String s = "You have played for " + formatTime(timePlayed) + " and have unlocked a hint";
                         tv.setText(s);
 
                         mBuilder.setView(mView);
@@ -1072,7 +1017,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         tvSteps.setText(s);
     }
 
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
@@ -1222,13 +1166,30 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                     scoreboard_data.addToScoreboard(user);
 
-                    if (hasMaxScore(user)){
+                    String place = scoring(user);
+                    String congratsMessage;
 
+                    if (!(place.equals("none"))){
+
+                        switch (place){
+                            case "first":
+                                congratsMessage = "You have the highest score with ";
+                                break;
+                            case "second":
+                                congratsMessage = "You have the second highest score with ";
+                                break;
+                            case "third":
+                                congratsMessage = "You have the third highest score with ";
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Invalid score");
+
+                        }
                         AlertDialog.Builder m4Builder = new AlertDialog.Builder(GameActivity.this);
                         View m4View = getLayoutInflater().inflate(R.layout.highest_score_dialog, null);
 
-                            String str = "Congratulations " + user.getUserName() +
-                                    "!\nYou have a new best time with " + formatTime(time) + "!";
+                            String str = "Congratulations " + user.getUserName() + "!\n" + congratsMessage + formatTime(time) + "!";
+
                             TextView textView = m4View.findViewById(R.id.congratsTv);
                             textView.setText(str);
 
@@ -1250,6 +1211,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                         });
 
 
+
+
                     } else {
 
                     Intent i = new Intent(GameActivity.this, ScoreboardActivity.class);
@@ -1259,7 +1222,14 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
 
                 } else {
-                    Toast.makeText(GameActivity.this, "Enter your name", Toast.LENGTH_LONG).show();
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.linlayoutgame), "Please enter your name", Snackbar.LENGTH_LONG);
+                    TextView snackbarTV = (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+
+                    snackbar.getView().setBackgroundColor(Color.DKGRAY);
+                    snackbarTV.setTextColor(Color.WHITE);
+                    snackbarTV.setTextSize(20);
+                    snackbar.show();
+
                 }
 
             }
@@ -1275,6 +1245,82 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             }
         });
     }
+
+    public void handleGiveUp(){
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
+        View mView = getLayoutInflater().inflate(R.layout.give_up_dialog, null);
+
+        Button yesGiveUp = mView.findViewById(R.id.yesGiveUp);
+        Button keepPlaying = (Button) mView.findViewById(R.id.keepPlaying);
+
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
+        yesGiveUp.setOnClickListener(new View.OnClickListener() {
+            //reveal song info when gave up
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder m2Builder = new AlertDialog.Builder(GameActivity.this);
+                View m2View = getLayoutInflater().inflate(R.layout.on_quit_dialog, null);
+
+                // get info to display the song details.
+
+                Song currentSong = getSongInPlay();
+                TextView giveUpSong = (TextView) m2View.findViewById(R.id.giveUpSongTV);
+                String answer1 = "The song was: " + currentSong.getTitle();
+                giveUpSong.setText(answer1);
+                TextView giveUpArtist = (TextView) m2View.findViewById(R.id.giveUpArtistTV);
+                String answer2 = "By: " + currentSong.getArtist();
+                giveUpArtist.setText(answer2);
+
+                m2Builder.setView(m2View);
+                final AlertDialog dialog2 = m2Builder.create();
+                dialog2.show();
+
+                mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
+                mEditor = mPreferences.edit();
+                mEditor.putBoolean("GameState", false);
+                mEditor.apply();
+                Log.i(TAG, "Updating game state to " + false);
+
+                // remove song from unplayed songs and add to unplayed songs.
+
+                Log.i(TAG, "Remove " + currentSong.getTitle() + "from unplayed songs");
+                song_data.removeUnplayedSong(currentSong.getNumber());
+
+                Log.i(TAG, "Add " + currentSong.getTitle() + " to played songs");
+                song_data.addPlayedSong(new Song(currentSong.getNumber(), currentSong.getArtist(), currentSong.getTitle()));
+
+
+                // button for new game or remove?
+
+                Button goBackHome = (Button) m2View.findViewById(R.id.backHomeQuit);
+                goBackHome.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent gohome = new Intent(GameActivity.this, MainActivity.class);
+                        startActivity(gohome);
+                    }
+                });
+
+            }
+        });
+
+        keepPlaying.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // replace later with close
+                dialog.dismiss();
+            }
+        });
+
+
+
+
+    }
+
+
 
   /* -------------------------------------------  Helpers ----------------------------------------------------*/
 
@@ -1301,31 +1347,55 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         return difficulty;
     }
 
-    public boolean hasMaxScore(User user){
+    public String scoring(User user){
 
         ArrayList<User> scoreboard = new ArrayList<>(scoreboard_data.getScoreboard());
 
-        int nums = scoreboard.size();
-        System.out.println(nums);
+        String place = null;
 
+        int sb_length = scoreboard.size();
 
-        // sorts arraylist by time, returns first in list and compares with current user.
+        // sorts arraylist by time, returns first, second & third in list and compares with current user.
 
         Collections.sort(scoreboard, User.UserComparator);
 
-        User highestUser = scoreboard.get(0);
+        User firstPlace = null;
+        User secondPlace = null;
+        User thirdPlace = null;
 
-        if ((user.getUserName().equals(highestUser.getUserName()))&&(user.getUserTime()==user.getUserTime())){
-
-            Log.i(TAG, "User has highest score");
-            return true;
-
-        } else {
-
-            return false;
+        if (sb_length > 0){
+            firstPlace = scoreboard.get(0);
+        }
+        if (sb_length > 1){
+            secondPlace = scoreboard.get(1);
+        }
+        if (sb_length > 2){
+            thirdPlace = scoreboard.get(2);
         }
 
+
+        if ((user.getUserName().equals(firstPlace.getUserName()))&&(user.getUserTime()==firstPlace.getUserTime())){
+
+            Log.i(TAG, "User has 1st place");
+            place = "first";
+
+        } else if ((user.getUserName().equals(secondPlace.getUserName()))&&(user.getUserTime()==secondPlace.getUserTime())){
+
+            Log.i(TAG, "User has 2rd place");
+            place = "second";
+
+        } else if ((user.getUserName().equals(thirdPlace.getUserName()))&&(user.getUserTime()==thirdPlace.getUserTime())){
+            Log.i(TAG, "User has 3rd place");
+            place = "third";
+        } else {
+
+            place = "none";
+        }
+
+        return place;
     }
+
+
 
     public static boolean isLocationEnabled(Context context) {
             int locationMode = 0;

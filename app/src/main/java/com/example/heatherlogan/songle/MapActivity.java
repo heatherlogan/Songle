@@ -43,9 +43,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.ArrayList;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -59,9 +57,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.tasks.Task;
 import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 
 import org.xmlpull.v1.XmlPullParserException;
 import org.apache.commons.io.IOUtils;
@@ -83,7 +79,7 @@ public class MapActivity
     private static final String TAG = "Maps Activity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    public static final float DEFAULT_ZOOM = 18.0f;
+    public static final float DEFAULT_ZOOM = 20.0f;
 
     private Marker currentLocationMarker;
     private Circle collectableRadius;
@@ -207,6 +203,7 @@ public class MapActivity
 
                 currentLo = new LatLng(lat, lon);
             } else {
+
                 double lat = 55.944088;
                 double lon = -3.187219;
 
@@ -217,7 +214,7 @@ public class MapActivity
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 
             collectableRadius = gMap.addCircle(new CircleOptions().center(currentLo)
-                                .radius(40).strokeColor(Color.CYAN));
+                                .radius(3).strokeColor(Color.CYAN));
 
             moveCamera(currentLo, DEFAULT_ZOOM);
 
@@ -260,7 +257,7 @@ public class MapActivity
 
             collectableRadius = gMap.addCircle(new CircleOptions()
                     .center(lastLocationCoords)
-                    .radius(40).strokeColor(Color.CYAN));
+                    .radius(3).strokeColor(Color.CYAN));
 
         }
     }

@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         checkServices();
 
         if (checkServices()) {
-            resumeGame();
             newGame();
 
         } else {
@@ -79,21 +78,10 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "DATABASE EXCEPTION");
         }
 
-        openOptions();
+        openExtras();
     }
 
     /*--------------------------------------------- Buttons ----------------------------------------------------------*/
-    private void resumeGame() {
-        Button resumeGameButton = findViewById(R.id.resumeGameButton);
-        resumeGameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent i = new Intent(MainActivity.this, GameActivity.class);
-                startActivity(i);
-            }
-        });
-    }
 
     private void newGame() {
         Button newGameButton = findViewById(R.id.newGameButton);
@@ -193,10 +181,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(openScoreboard);
     }
 
-    public void openOptions() {
+    public void openExtras() {
 
-        Button optionsBttn = (Button) findViewById(R.id.optionsButton);
-        optionsBttn.setOnClickListener(new View.OnClickListener() {
+        Button extrasBttn = (Button) findViewById(R.id.extrasButton);
+        extrasBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent openOptions = new Intent(MainActivity.this, OptionsActivity.class);

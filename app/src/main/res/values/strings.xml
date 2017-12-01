@@ -27,5 +27,6 @@
     <string name="word">Word</string>
     <string name="lineposition">Line: Position</string>
     <string name="go_back">Go back</string>
+    <string name="main_screen">Main Screen</string>
 </resources>
 

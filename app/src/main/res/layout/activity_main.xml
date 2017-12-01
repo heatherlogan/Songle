@@ -23,6 +23,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="300dp"
+        android:id="@+id/linlayoutmain"
         android:orientation="vertical"
         android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
@@ -33,24 +34,14 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp">
 
-        <Button
-            android:id="@+id/resumeGameButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/mybutton"
-            android:text="@string/resume_game"
-            android:layout_weight="0.25"
-            android:textSize="30sp"
-            android:textAllCaps="false"
-            android:textColor="@color/lightGrey"
-            android:layout_margin="5dp"
-            />
+
 
         <Button
             android:id="@+id/newGameButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/mybutton"
             android:text="@string/newgame"
             android:textSize="30sp"
@@ -73,7 +64,7 @@
             />
 
         <Button
-            android:id="@+id/optionsButton"
+            android:id="@+id/extrasButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.25"
