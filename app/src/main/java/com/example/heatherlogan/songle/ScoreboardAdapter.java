@@ -37,18 +37,20 @@ public class ScoreboardAdapter extends ArrayAdapter<User> {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
 
-        TextView tvName = (TextView) convertView.findViewById(R.id.nameTextView);
-        TextView tvLevel = (TextView) convertView.findViewById(R.id.levelTextView);
-        TextView tvTime = (TextView) convertView.findViewById(R.id.timeTextView);
-        TextView tvSteps = (TextView) convertView.findViewById(R.id.stepsTextView);
+        TextView tvName = convertView.findViewById(R.id.nameTextView);
+        TextView tvLevel = convertView.findViewById(R.id.levelTextView);
+        TextView tvTime = convertView.findViewById(R.id.timeTextView);
+        TextView tvSteps = convertView.findViewById(R.id.stepsTextView);
 
         tvName.setText(name);
         tvLevel.setText(level);
         tvTime.setText(formatTime(time));
-        tvSteps.setText(Integer.toString(steps));
-
+        if (steps != 0 ) {
+            tvSteps.setText(Integer.toString(steps));
+        } else {
+            tvSteps.setText(" ");
+        }
         return convertView;
-
     }
 
     private static String formatTime(int time){

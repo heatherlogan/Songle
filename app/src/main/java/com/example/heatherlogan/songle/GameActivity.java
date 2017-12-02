@@ -289,14 +289,11 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                         handleGiveUp();
             }
         });
-
     }
 
     @Override
     public void onBackPressed(){
-
-        handleGiveUp();
-
+            handleGiveUp();
     }
 
         /* ------------------------------------------ GET URLS ----------------------------------------------*/
@@ -1029,8 +1026,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         final int stepsToComplete = numSteps;
         onStopTimer();
 
-
         AlertDialog.Builder m4Builder = new AlertDialog.Builder(GameActivity.this);
+        m4Builder.setCancelable(false);
         View m4View = getLayoutInflater().inflate(R.layout.correct_song_dialog, null);
 
         TextView mTextViewSong = m4View.findViewById(R.id.displaySong);
@@ -1083,12 +1080,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
              List<Song> unplayedSongs = song_data.getUnplayedSongs();
 
              System.out.println("After removed " + unplayedSongs.size());
-
-
             }
         });
-
-
     }
 
     public void handleIncorrectGuess() {
@@ -1138,11 +1131,12 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         final int steps = stepsToComplete;
 
         AlertDialog.Builder m2Builder = new AlertDialog.Builder(GameActivity.this);
+        m2Builder.setCancelable(false);
         View m2View = getLayoutInflater().inflate(R.layout.enter_name_dialog, null);
 
-        final EditText userName = (EditText) m2View.findViewById(R.id.enterNameET);
-        Button  enter = (Button) m2View.findViewById(R.id.enterNameBttn);
-        Button dontenter = (Button) m2View.findViewById(R.id.dontEnterName);
+        final EditText userName = m2View.findViewById(R.id.enterNameET);
+        Button  enter = m2View.findViewById(R.id.enterNameBttn);
+        Button dontenter = m2View.findViewById(R.id.dontEnterName);
 
         Intent intent = getIntent();
         final int mapNo = intent.getIntExtra("mapNo", 0);
@@ -1186,6 +1180,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                         }
                         AlertDialog.Builder m4Builder = new AlertDialog.Builder(GameActivity.this);
+                        m4Builder.setCancelable(false);
                         View m4View = getLayoutInflater().inflate(R.layout.highest_score_dialog, null);
 
                             String str = "Congratulations " + user.getUserName() + "!\n" + congratsMessage + formatTime(time) + "!";
@@ -1247,6 +1242,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void handleGiveUp(){
+
+
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
         View mView = getLayoutInflater().inflate(R.layout.give_up_dialog, null);
 
@@ -1263,6 +1260,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 AlertDialog.Builder m2Builder = new AlertDialog.Builder(GameActivity.this);
                 View m2View = getLayoutInflater().inflate(R.layout.on_quit_dialog, null);
+                m2Builder.setCancelable(false);
 
                 // get info to display the song details.
 
@@ -1303,7 +1301,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                         startActivity(gohome);
                     }
                 });
-
             }
         });
 
@@ -1319,8 +1316,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
 
     }
-
-
 
   /* -------------------------------------------  Helpers ----------------------------------------------------*/
 
@@ -1395,10 +1390,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         return place;
     }
 
-
-
     public static boolean isLocationEnabled(Context context) {
-            int locationMode = 0;
+            int locationMode;
             String locationProviders;
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
