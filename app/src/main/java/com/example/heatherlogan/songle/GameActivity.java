@@ -99,7 +99,17 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         scoreboard_data = new ScoreboardDatasource(this);
         song_data = new SongDatasource(this);
 
-        System.out.println("is location enabled: " + isLocationEnabled(this));
+        Log.i(TAG,"is location enabled: " + isLocationEnabled(this));
+
+        if (!(isLocationEnabled(this))){
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.linlayoutgame), "Please enable your location", Snackbar.LENGTH_LONG);
+            TextView snackbarTV = (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+
+            snackbar.getView().setBackgroundColor(Color.DKGRAY);
+            snackbarTV.setTextColor(Color.WHITE);
+            snackbarTV.setTextSize(20);
+            snackbar.show();
+        }
 
         try {
             data.open();
@@ -115,14 +125,14 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         // Set up timer and pedometer.
 
-        mChronometer = (Chronometer) findViewById(R.id.chronometer);
+        mChronometer = findViewById(R.id.chronometer);
         onStartTimer();
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accel = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mStepDetector = new StepDetector();
         mStepDetector.registerListener(this);
-        tvSteps = (TextView) findViewById(R.id.stepCounterTV);
+        tvSteps = findViewById(R.id.stepCounterTV);
 
 
         //buttons
@@ -144,13 +154,15 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         running = true;
         Sensor countsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (countsensor != null) {
+            Log.i(TAG, "Device has step counter");
             deviceHasStepCounter = true;
             mSensorManager.registerListener(this, countsensor, SensorManager.SENSOR_DELAY_UI);
         } else {
+            Log.i(TAG, "Device does not have step counter");
             deviceHasStepCounter = false;
             tvSteps.setText(R.string.StepCountNotAvailable);
         }
-       Log.i(TAG, "device step counter: " + deviceHasStepCounter);
+
     }
 
     @Override
@@ -158,22 +170,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         super.onPause();
         running = false;
 
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
-        mEditor = mPreferences.edit();
-        mEditor.putBoolean("GameState", true);
-        mEditor.apply();
-        Log.i(TAG, "Updating game state to " + true);
-
-        // keep running when app is not open?
-    }
-
-    protected void onDestroy() {
-        super.onDestroy();
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
-        mEditor = mPreferences.edit();
-        mEditor.putBoolean("GameState", false);
-        mEditor.apply();
-        Log.i(TAG, "Updating game state to " + false);
     }
 
     @Override

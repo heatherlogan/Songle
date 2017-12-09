@@ -90,8 +90,6 @@ public class MapActivity
     private int numberofmarkers = 0;
     private int numbercollectedmarkers = 0;
 
-    public ArrayList<WordInfo> collectedWords = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,14 +136,14 @@ public class MapActivity
     protected void onResume(){
         super.onResume();
 
+        /* On resume, retrieve the number of collected markers from shared preferences */
+
         SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor ediot = mPreferences.edit();
 
         numbercollectedmarkers = mPreferences.getInt("numbercollectedmarkers", 0);
-
         progressbar.setProgress(numbercollectedmarkers);
 
-        Log.i(TAG, "Retrieve number collected markers from shared pref");
 
     }
 
@@ -161,6 +159,8 @@ public class MapActivity
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
+
+        /* On stop, add to shared preferences to keep data from being lost when map activity is left */
 
         SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = mPreferences.edit();
@@ -268,6 +268,19 @@ public class MapActivity
 
                 currentLo = new LatLng(lat, lon);
             } else {
+                /* Notify player  */
+
+                Snackbar snackbar = Snackbar.make(findViewById(R.id.layout1),
+                        "Your current location cannot be found.\nPlease check location services.",
+                        Snackbar.LENGTH_INDEFINITE);
+                TextView snackbarTV = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+
+                snackbar.getView().setBackgroundColor(Color.DKGRAY);
+                snackbarTV.setTextColor(Color.WHITE);
+                snackbarTV.setTextSize(20);
+                snackbar.show();
+
+                /* Setting a default location to prevent crash */
 
                 double lat = 55.944088;
                 double lon = -3.187219;

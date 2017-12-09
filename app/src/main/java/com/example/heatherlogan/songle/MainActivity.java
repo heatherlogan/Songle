@@ -3,9 +3,11 @@ package com.example.heatherlogan.songle;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.os.AsyncTask;
 import android.app.Dialog;
 import android.widget.RadioGroup;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.InputStream;
@@ -35,10 +38,9 @@ import org.xmlpull.v1.XmlPullParserException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.MapView;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private static final int ERROR_DIALOG_REQUEST = 9001;
     public final String TAG = "MainActivity";
@@ -56,16 +58,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         MapsInitializer.initialize(getApplicationContext());
 
-        System.out.println("is network available: " + isNetworkAvailable());
+        checkConnection();
 
-        checkServices();
-
-        if (checkServices()) {
-            newGame();
-
-        } else {
-            System.out.print("No service");
-        }
+        newGame();
 
         data = new PlacemarkDatasource(this);
         word_data = new CollectedWordsDatasource(this);
@@ -81,18 +76,53 @@ public class MainActivity extends AppCompatActivity {
         openExtras();
     }
 
+    private boolean checkConnection() {
+
+        return (ConnectivityReceiver.isConnected());
+    }
+
+    // Showing the status in Snackbar
+    private void showSnack(boolean isConnected) {
+        String message;
+        int color;
+        if (isConnected) {
+            message = "Good! Connected to Internet";
+            color = Color.WHITE;
+        } else {
+            message = "Sorry! Not connected to internet";
+            color = Color.RED;
+        }
+
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+
+        toast.show();
+    }
+
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        ConnectionApp.getInstance().setConnectivityListener(MainActivity.this);
+
+    }
+
     /*--------------------------------------------- Buttons ----------------------------------------------------------*/
 
     private void newGame() {
+
         Button newGameButton = findViewById(R.id.newGameButton);
         newGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                checkConnection();
+
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
                 View mView = getLayoutInflater().inflate(R.layout.new_game_dialog, null);
 
-                Button yesButton = (Button) mView.findViewById(R.id.yesButton);
-                Button noButton = (Button) mView.findViewById(R.id.noButton);
+                final Button yesButton = (Button) mView.findViewById(R.id.yesButton);
+                final Button noButton = (Button) mView.findViewById(R.id.noButton);
 
                 mBuilder.setView(mView);
                 final AlertDialog dialog = mBuilder.create();
@@ -103,6 +133,9 @@ public class MainActivity extends AppCompatActivity {
                     // Choosing to start a new game brings up dialog to choose difficulty level
                     @Override
                     public void onClick(View view) {
+
+                        if (checkConnection() && checkGoogleApi()) {
+
                         AlertDialog.Builder m2Builder = new AlertDialog.Builder(MainActivity.this);
                         View m2View = getLayoutInflater().inflate(R.layout.select_difficulty_dialog, null);
 
@@ -117,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
 
-                                RadioButton radiob = (RadioButton) radioGroup.findViewById(checkedId);
+                                RadioButton radiob = radioGroup.findViewById(checkedId);
 
                                 switch (radiob.getId()) {
                                     case R.id.veryEasyRB:
@@ -159,21 +192,33 @@ public class MainActivity extends AppCompatActivity {
                                     startActivity(intent);
 
                                     dialog2.dismiss();
-
                                 }
                             }
                         });
                         dialog.dismiss();
+
+                        } else {
+                            if (!(checkConnection())) {
+                                Toast.makeText(MainActivity.this, "You are not connected to the internet\nPlease check and try again.", Toast.LENGTH_LONG).show();
+                            } else {
+                                if (!(checkGoogleApi())){
+                                    Toast.makeText(MainActivity.this, "You are not connected to Google Services\nPlease check and try again.", Toast.LENGTH_LONG).show();
+
+                                }
+                            }
+                        }
                     }
                 });
+
                 noButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         dialog.dismiss();
                     }
                 });
-            }
-        });
+
+        }
+    });
     }
 
     public void openScoreboard(View view) {
@@ -197,11 +242,11 @@ public class MainActivity extends AppCompatActivity {
 
     /* -------------Check for connection to google Play Services and Network Connection before entering game----------------------- */
 
-    private boolean checkServices() {
+    private boolean checkGoogleApi() {
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
         if (available == ConnectionResult.SUCCESS) {
 
-            System.out.println("Google API avalable");
+            Log.i(TAG, "Google API avalable");
 
             return true;
 
@@ -209,22 +254,20 @@ public class MainActivity extends AppCompatActivity {
 
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MainActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
+
         } else {
-            System.out.println("Google API not avalable");
+            Log.i(TAG, "Google API not avalable");
             return false;
         }
         return false;
     }
 
-    private boolean isNetworkAvailable() {
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
 
-        ConnectivityManager conMan = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeInfo = conMan.getActiveNetworkInfo();
-        return activeInfo != null && activeInfo.isConnected();
+        checkConnection();
+
     }
-
-
-
 }
 
 
