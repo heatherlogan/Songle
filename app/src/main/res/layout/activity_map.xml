@@ -24,6 +24,26 @@
         android:layout_marginBottom="191dp"
         android:orientation="vertical">
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:padding="20dp"
+            android:progressBackgroundTint="@color/lightGrey"
+            android:progressTint="@color/blue"
+            />
+
+        <TextView
+            android:id="@+id/colwords_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Collected Words: 00/100"
+            android:textAlignment="center"
+            android:textColor="@color/grey"/>
+
+
+
     </LinearLayout>
 
 
@@ -35,20 +55,6 @@
         android:padding="15dp"
         android:id="@+id/linearLayout">
 
-
-        <Button
-            android:id="@+id/backHomeMap"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginRight="5dp"
-            android:layout_weight="0.5"
-            android:background="@drawable/mybutton"
-            android:padding="5dp"
-            android:text="Back "
-            android:textAllCaps="false"
-            android:textColor="@color/lightGrey"
-            android:textSize="15dp"/>
 
         <Button
             android:id="@+id/viewWordsFromMap"

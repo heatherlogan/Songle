@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.SharedPreferences;
@@ -84,12 +85,20 @@ public class MapActivity
     private Marker currentLocationMarker;
     private Circle collectableRadius;
 
+    private ProgressBar progressbar;
+    private TextView colwords_tv;
+    private int numberofmarkers = 0;
+    private int numbercollectedmarkers = 0;
+
     public ArrayList<WordInfo> collectedWords = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        progressbar = (ProgressBar) findViewById(R.id.progressBar);
+        colwords_tv = findViewById(R.id.colwords_tv);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.google_map);
         mapFragment.getMapAsync(this);
@@ -121,8 +130,22 @@ public class MapActivity
 
         // buttons
 
-        goBackToGame();
         openCollectedWords();
+
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor ediot = mPreferences.edit();
+
+        numbercollectedmarkers = mPreferences.getInt("numbercollectedmarkers", 0);
+
+        progressbar.setProgress(numbercollectedmarkers);
+
+        Log.i(TAG, "Retrieve number collected markers from shared pref");
 
     }
 
@@ -138,7 +161,46 @@ public class MapActivity
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
+
+        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putInt("numbercollectedmarkers", numbercollectedmarkers );
+        editor.apply();
+        Log.i(TAG, "put collected words into shared pref ");
     }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+
+          savedInstanceState.putInt("numcollectedmarkers", numbercollectedmarkers);
+          savedInstanceState.putInt("numtotalmarkers", numberofmarkers);
+
+        Log.i("Instance State", "onSaveInstanceState");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if((savedInstanceState !=null) && savedInstanceState.containsKey("numcollectedmarkers")
+                && savedInstanceState.containsKey("numtotalmarkers")) {
+
+            int colmarkers = savedInstanceState.getInt("numcollectedmarkers");
+            int totalmarkers = savedInstanceState.getInt("numtotalmarkers");
+
+            System.out.println("col markers: " + colmarkers);
+
+            String s = "Collected Words: " + colmarkers + "/" + totalmarkers;
+            colwords_tv.setText(s);
+            progressbar.setMax(totalmarkers);
+            progressbar.setProgress(colmarkers);
+
+        }
+        Log.i("Instance state", "onRestoreInstanceState");
+    }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -148,6 +210,9 @@ public class MapActivity
         Log.i(TAG, "Adding Markers");
         addMarkers();
         setOnClickMarker();
+
+        String s = "Collected Words " + numbercollectedmarkers + "/" + numberofmarkers;
+        colwords_tv.setText(s);
 
         try {
             gMap.setMyLocationEnabled(true);
@@ -214,7 +279,7 @@ public class MapActivity
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 
             collectableRadius = gMap.addCircle(new CircleOptions().center(currentLo)
-                                .radius(3).strokeColor(Color.CYAN));
+                                .radius(60).strokeColor(Color.CYAN));
 
             moveCamera(currentLo, DEFAULT_ZOOM);
 
@@ -257,7 +322,7 @@ public class MapActivity
 
             collectableRadius = gMap.addCircle(new CircleOptions()
                     .center(lastLocationCoords)
-                    .radius(3).strokeColor(Color.CYAN));
+                    .radius(60).strokeColor(Color.CYAN));
 
         }
     }
@@ -279,6 +344,8 @@ public class MapActivity
          List<Placemark> m = data.getMarkers();
 
          for (int i = 0 ; i < m.size() ; i++){
+
+             numberofmarkers ++;
 
              String coords = m.get(i).getCoordinates();
              String removeZero = coords.substring(0, coords.length()-2);
@@ -340,10 +407,9 @@ public class MapActivity
                  }
             }
 
-             /* Testing purposes */
-
-         }
-
+         Log.i(TAG, "Added " + numberofmarkers + " markers");
+         progressbar.setMax(numberofmarkers);
+     }
 
     // when clicked, marker is remove marker from map and database, corresponding word displayed and added to Collected words database.
      private void setOnClickMarker() {
@@ -379,14 +445,25 @@ public class MapActivity
                     } else {
 
                         collectMarker(m);
+
                     }
                 }
                 return false;
             }
         });
+
+
     }
 
     public void collectMarker(Marker m){
+
+        System.out.println("numbercollectedmarkers " + numbercollectedmarkers) ;
+        numbercollectedmarkers += 1;
+
+        String statsstring = "Collected Words: " + numbercollectedmarkers + "/" + numberofmarkers;
+        colwords_tv.setText(statsstring);
+
+        progressbar.setProgress(numbercollectedmarkers);
 
         // for matching marker to word in lyrics
 
@@ -410,7 +487,7 @@ public class MapActivity
         for (Placemark placemark : pms) {
             count++;
             // result.append(" \n");
-            // result.append(" : " + placemark.getName() + " : " + placemark.getCoordinates());
+            // result.append(" : " + plac emark.getName() + " : " + placemark.getCoordinates());
         }
         System.out.println("Number of markers: " + count);
 
@@ -558,17 +635,6 @@ public class MapActivity
     }
 
     /*--------------------------------------Buttons---------------------------------------*/
-
-    private void goBackToGame() {
-        Button back = findViewById(R.id.backHomeMap);
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                MapActivity.super.onBackPressed();
-            }
-        });
-    }
 
     private void openCollectedWords(){
         Button view_collected_words = (Button) findViewById(R.id.viewWordsFromMap);

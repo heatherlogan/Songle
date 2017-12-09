@@ -75,6 +75,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     private int numSteps;
 
     private int randomSongNumber = 0;
+    private int numberofmarkers = 0;
 
     PlacemarkDatasource data;
     ScoreboardDatasource scoreboard_data;
@@ -149,8 +150,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             deviceHasStepCounter = false;
             tvSteps.setText(R.string.StepCountNotAvailable);
         }
-
-        System.out.println("DEVICE HAS STEP COUNTER " + deviceHasStepCounter);
+       Log.i(TAG, "device step counter: " + deviceHasStepCounter);
     }
 
     @Override
@@ -297,7 +297,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     }
 
         /* ------------------------------------------ GET URLS ----------------------------------------------*/
-
 
     private int generateRandomSong() {
 
@@ -496,7 +495,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     //Given a string connection  of a url, sets up a string connection and gets an input stream.
     private InputStream downloadUrl(String urlString) throws IOException {
 
-        System.out.println("Download URL: " + URL);
         URL url = new URL(urlString);
 
 
@@ -543,8 +541,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         protected List<Placemark> doInBackground(String... urls) {
 
             try {
-                System.out.println("do in background working");
-
                 return loadKmlFromNetwork(urls[0]);
 
             } catch (IOException e) {
@@ -591,8 +587,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
 
         private String downloadUrl(String urlString) throws IOException {
-
-            System.out.println("Download KML: " + urlString);
 
             URL url = new URL(urlString);
 
@@ -1056,13 +1050,11 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         song_data.addPlayedSong(new Song(song.getNumber(), song.getArtist(), song.getTitle()));
 
 
-        // change gamestate to false
+        // clear shared pref
         mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
-        mEditor = mPreferences.edit();
-        mEditor.putBoolean("GameState", false);
-        mEditor.apply();
-        Log.i(TAG, "Updating game state to " + false);
-
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.clear();
+        editor.apply();
 
         Button continue3 = (Button) m4View.findViewById(R.id.continue3);
 
@@ -1277,10 +1269,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 dialog2.show();
 
                 mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
-                mEditor = mPreferences.edit();
-                mEditor.putBoolean("GameState", false);
-                mEditor.apply();
-                Log.i(TAG, "Updating game state to " + false);
+                SharedPreferences.Editor editor = mPreferences.edit();
+                editor.clear();
+                editor.commit();
 
                 // remove song from unplayed songs and add to unplayed songs.
 

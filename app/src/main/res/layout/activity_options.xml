@@ -75,7 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAllCaps="false"
-            android:text="Go Back"
+            android:text="Main Menu"
             android:background="@drawable/mybutton"
             android:layout_margin="10dp"
             android:textSize="18sp"
