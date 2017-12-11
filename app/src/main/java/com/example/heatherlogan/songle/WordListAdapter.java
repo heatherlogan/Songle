@@ -35,9 +35,9 @@ public class WordListAdapter extends ArrayAdapter<WordInfo>{
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate(mResource, parent, false);
 
-        TextView tvWord = (TextView) convertView.findViewById(R.id.wordTextView);
-        TextView tvLine = (TextView) convertView.findViewById(R.id.lineTextView);
-        TextView tvPosit = (TextView) convertView.findViewById(R.id.positionTextView);
+        TextView tvWord = convertView.findViewById(R.id.wordTextView);
+        TextView tvLine = convertView.findViewById(R.id.lineTextView);
+        TextView tvPosit = convertView.findViewById(R.id.positionTextView);
 
         tvWord.setText(word);
         tvLine.setText(Integer.toString(lineNo));

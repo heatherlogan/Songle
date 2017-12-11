@@ -8,6 +8,8 @@ import android.net.NetworkInfo;
 
 public class ConnectivityReceiver extends BroadcastReceiver {
 
+    /* FROM https://www.androidhive.info/2012/07/android-detect-internet-connection-status/*/
+
     public static ConnectivityReceiverListener connectivityReceiverListener;
 
     public ConnectivityReceiver() {

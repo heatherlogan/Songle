@@ -74,6 +74,12 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
         }
 
         openExtras();
+
+        // clear shared pref
+        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.clear();
+        editor.apply();
     }
 
     private boolean checkConnection() {
@@ -121,8 +127,8 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
                 View mView = getLayoutInflater().inflate(R.layout.new_game_dialog, null);
 
-                final Button yesButton = (Button) mView.findViewById(R.id.yesButton);
-                final Button noButton = (Button) mView.findViewById(R.id.noButton);
+                final Button yesButton = mView.findViewById(R.id.yesButton);
+                final Button noButton = mView.findViewById(R.id.noButton);
 
                 mBuilder.setView(mView);
                 final AlertDialog dialog = mBuilder.create();
@@ -139,8 +145,8 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
                         AlertDialog.Builder m2Builder = new AlertDialog.Builder(MainActivity.this);
                         View m2View = getLayoutInflater().inflate(R.layout.select_difficulty_dialog, null);
 
-                        difficultyoptions = (RadioGroup) m2View.findViewById(R.id.rg);
-                        Button playButton7 = (Button) m2View.findViewById(R.id.playButton7);
+                        difficultyoptions = m2View.findViewById(R.id.rg);
+                        Button playButton7 = m2View.findViewById(R.id.playButton7);
 
                         m2Builder.setView(m2View);
                         final AlertDialog dialog2 = m2Builder.create();
@@ -228,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
 
     public void openExtras() {
 
-        Button extrasBttn = (Button) findViewById(R.id.extrasButton);
+        Button extrasBttn = findViewById(R.id.extrasButton);
         extrasBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

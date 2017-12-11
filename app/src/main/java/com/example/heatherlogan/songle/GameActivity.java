@@ -3,7 +3,6 @@ package com.example.heatherlogan.songle;
 /* Code for pedometer referenced from http://www.gadgetsaint.com/android/create-pedometer-step-counter-android/#.Whx0gbacau5
 * */
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -30,7 +29,6 @@ import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
 import org.xmlpull.v1.XmlPullParserException;
@@ -61,28 +59,21 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     public static String kmlURL;
     public static String lyricURL;
 
-    private Location mLastLocation;
-    GoogleApiClient mGoogleApiClient;
-
     private Chronometer mChronometer;
-    private long time;
 
     SensorManager mSensorManager;
     private StepDetector mStepDetector;
     private Boolean running = false;
     private Boolean deviceHasStepCounter = false;
-    private Sensor accel;
     private int numSteps;
 
     private int randomSongNumber = 0;
-    private int numberofmarkers = 0;
 
     PlacemarkDatasource data;
     ScoreboardDatasource scoreboard_data;
     SongDatasource song_data;
 
     private SharedPreferences mPreferences;
-    private SharedPreferences.Editor mEditor;
 
     // changed when user gets hint, so they may not receive more than one hint.
     private Boolean hasGotHint = false;
@@ -129,7 +120,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         onStartTimer();
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        accel = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        Sensor accel = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mStepDetector = new StepDetector();
         mStepDetector.registerListener(this);
         tvSteps = findViewById(R.id.stepCounterTV);
@@ -215,10 +206,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
                 View mView = getLayoutInflater().inflate(R.layout.guess_dialog, null);
-                final EditText mGuess = (EditText) mView.findViewById(R.id.songGuessEnter);
+                final EditText mGuess = mView.findViewById(R.id.songGuessEnter);
 
-                Button mEnter = (Button) mView.findViewById(R.id.enterButton);
-                Button mExit = (Button) mView.findViewById(R.id.gobackButton);
+                Button mEnter = mView.findViewById(R.id.enterButton);
+                Button mExit = mView.findViewById(R.id.gobackButton);
 
                 mBuilder.setView(mView);
                 final AlertDialog dialog = mBuilder.create();
@@ -280,6 +271,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         give_up_button.setOnClickListener(new View.OnClickListener() {
 
             // ask if user wants to quit when give up button is clicked
+
             @Override
             public void onClick(View view) {
                         handleGiveUp();
@@ -296,9 +288,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
     private int generateRandomSong() {
 
-        // Chooses a random song from the list of unplayed song and returns the int.
-        // Due to problem where only songs >10 are removed from unplayed database,
-        // If statements checks if song is in database.
+        /* Chooses a random song from the list of unplayed song and returns the int.
+           Due to problem where only songs >10 are removed from unplayed database,
+           If statements checks if song is in database. */
 
         List<Song> unplayedSongs = song_data.getUnplayedSongs();
 
@@ -379,7 +371,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             Log.i(TAG, "got map number " + mapNum);
 
             kmlURL = generateKmlUrl(mapNum);
-            Log.i(TAG, "Generate KML url " + kmlURL);
 
             // get a random song from the list of unplayed songs and get the url for lyric file.
             // Save the lyric url to shared preferences to be accessed in map activity.
@@ -387,12 +378,12 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             lyricURL = generateLyricUrl();
 
             mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
-            mEditor = mPreferences.edit();
-            mEditor.putString("lyricUrl_key", lyricURL);
-            mEditor.apply();
-            Log.i(TAG, "Adding lyricUrl to shared pref " + lyricURL);
+            SharedPreferences.Editor editor = mPreferences.edit();
+            editor.putString("lyricUrl_key", lyricURL);
+            editor.apply();
+            Log.i(TAG, "Adding lyricUrl to shared pref ");
 
-            // call download kml task when all components needed are available.
+            // Call download kml task when all components needed are available.
             new DownloadKmlTask().execute(kmlURL);
 
         }
@@ -424,8 +415,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 stream.close();
             }
         }
-        // clear unplayed songs on each play, then add again on download xml
-        // excluding songs in 'Played Songs' database.
+
+        // clear unplayed songs on each play, then add again on download xml excluding songs in 'Played Songs' database.
 
         song_data.clearDatabase("unplayed_songs");
 
@@ -440,19 +431,20 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         ArrayList<Song> songsArrayList = new ArrayList<>();
 
-        /*loops through songs parsed from xml document, adds to a list then loops through list, checking
-        whether song is in played list and adds to unplayed database if not.
-        * */
+        /* Loops through songs parsed from xml document, adds to a list then loops through list, checking
+        whether song is in played list and adds to unplayed database if not. */
 
         for (Song song : songs) {
-            // testing
+
+            // for testing
+
             result.append(" \n");
             result.append(song.getNumber());
             result.append(" : " + song.getTitle() + " : " + song.getArtist() + " : " + song.getLink() + "");
 
             Song unplayed = new Song(song.getNumber(), song.getArtist(), song.getTitle());
 
-             songsArrayList.add(song);
+            songsArrayList.add(song);
         }
 
         System.out.print("All songs: ");
@@ -505,7 +497,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-    // Save songs downloaded from xml to an arraylist and save in shared preferences to be used by TODO
     public void saveSongList(ArrayList<Song> songsArrayList) {
 
         SharedPreferences sharedPref = getSharedPreferences("Shared Pref", MODE_PRIVATE);
@@ -635,14 +626,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         String ignoreBrackets = correctSong.replaceAll("\\(.*\\)", "");
 
-        if ((guess.trim().equalsIgnoreCase(correctSong.trim())) || (guess.trim().equalsIgnoreCase(ignoreBrackets.trim()))) {
-
-            return true;
-
-        } else {
-
-            return false;
-        }
+        return (guess.trim().equalsIgnoreCase(correctSong.trim())) || (guess.trim().equalsIgnoreCase(ignoreBrackets.trim()));
     }
 
     /* ------------------------------------------- GET HINT ----------------------------------------------------*/
@@ -672,9 +656,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
                 final View mView = getLayoutInflater().inflate(R.layout.not_unlocked_hint_dialog, null);
-                TextView tv = (TextView) mView.findViewById(R.id.guessTV2);
+                TextView tv = mView.findViewById(R.id.guessTV2);
 
-                Button bttn = (Button) mView.findViewById(R.id.requestHintNo);
+                Button bttn = mView.findViewById(R.id.requestHintNo);
 
                 String h = "You have already had a hint!";
                 tv.setText(h);
@@ -699,9 +683,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                         // User has not walked enough steps to get a hint.
                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
                         final View mView = getLayoutInflater().inflate(R.layout.not_unlocked_hint_dialog, null);
-                        TextView tv = (TextView) mView.findViewById(R.id.guessTV2);
+                        TextView tv = mView.findViewById(R.id.guessTV2);
 
-                        Button bttn = (Button) mView.findViewById(R.id.requestHintNo);
+                        Button bttn = mView.findViewById(R.id.requestHintNo);
 
                         String s = "You must walk " + (2000 - steps) + " more steps to get a hint!";
                         tv.setText(s);
@@ -721,10 +705,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
                         final View mView = getLayoutInflater().inflate(R.layout.unlocked_hint_dialog, null);
-                        TextView tv = (TextView) mView.findViewById(R.id.gothintTv);
+                        TextView tv = mView.findViewById(R.id.gothintTv);
 
-                        Button bttnYes = (Button) mView.findViewById(R.id.getHintYes);
-                        Button bttnNo = (Button) mView.findViewById(R.id.getHintNo);
+                        Button bttnYes = mView.findViewById(R.id.getHintYes);
+                        Button bttnNo = mView.findViewById(R.id.getHintNo);
 
                         String str = "You have walked " + steps + " steps and have unlocked a hint!";
                         tv.setText(str);
@@ -741,7 +725,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                                 AlertDialog.Builder m2Builder = new AlertDialog.Builder(GameActivity.this);
                                 final View m2View = getLayoutInflater().inflate(R.layout.show_hint_dialog, null);
-                                TextView tv2 = (TextView) m2View.findViewById(R.id.showHintTV);
+                                TextView tv2 = m2View.findViewById(R.id.showHintTV);
 
                                 tv2.setText(hint2);
 
@@ -788,9 +772,9 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
                         final View mView = getLayoutInflater().inflate(R.layout.not_unlocked_hint_dialog, null);
-                        TextView tv = (TextView) mView.findViewById(R.id.guessTV2);
+                        TextView tv = mView.findViewById(R.id.guessTV2);
 
-                        Button bttn = (Button) mView.findViewById(R.id.requestHintNo);
+                        Button bttn = mView.findViewById(R.id.requestHintNo);
 
 
                         String str = "You must have played for 1 hour to get a hint!";
@@ -813,10 +797,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
                         final View mView = getLayoutInflater().inflate(R.layout.unlocked_hint_dialog, null);
-                        TextView tv = (TextView) mView.findViewById(R.id.gothintTv);
+                        TextView tv = mView.findViewById(R.id.gothintTv);
 
-                        Button bttnYes = (Button) mView.findViewById(R.id.getHintYes);
-                        Button bttnNo = (Button) mView.findViewById(R.id.getHintNo);
+                        Button bttnYes = mView.findViewById(R.id.getHintYes);
+                        Button bttnNo = mView.findViewById(R.id.getHintNo);
 
                         String s = "You have played for " + formatTime(timePlayed) + " and have unlocked a hint";
                         tv.setText(s);
@@ -833,7 +817,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                                 AlertDialog.Builder m2Builder = new AlertDialog.Builder(GameActivity.this);
                                 final View m2View = getLayoutInflater().inflate(R.layout.show_hint_dialog, null);
-                                TextView tv2 = (TextView) m2View.findViewById(R.id.showHintTV);
+                                TextView tv2 = m2View.findViewById(R.id.showHintTV);
 
                                 tv2.setText(hint2);
 
@@ -1052,7 +1036,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         editor.clear();
         editor.apply();
 
-        Button continue3 = (Button) m4View.findViewById(R.id.continue3);
+        Button continue3 = m4View.findViewById(R.id.continue3);
 
         m4Builder.setView(m4View);
         final AlertDialog dialog4 = m4Builder.create();
@@ -1079,7 +1063,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         // get user input on click of enter button
 
-        final EditText mGuess2 = (EditText) mView.findViewById(R.id.songGuess2);
+        final EditText mGuess2 = mView.findViewById(R.id.songGuess2);
 
         Button enterButton2 = mView.findViewById(R.id.enterButton2);
         Button goBackButton2 = mView.findViewById(R.id.gobackButton2);
@@ -1236,7 +1220,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         View mView = getLayoutInflater().inflate(R.layout.give_up_dialog, null);
 
         Button yesGiveUp = mView.findViewById(R.id.yesGiveUp);
-        Button keepPlaying = (Button) mView.findViewById(R.id.keepPlaying);
+        Button keepPlaying = mView.findViewById(R.id.keepPlaying);
 
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
@@ -1253,10 +1237,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 // get info to display the song details.
 
                 Song currentSong = getSongInPlay();
-                TextView giveUpSong = (TextView) m2View.findViewById(R.id.giveUpSongTV);
+                TextView giveUpSong = m2View.findViewById(R.id.giveUpSongTV);
                 String answer1 = "The song was: " + currentSong.getTitle();
                 giveUpSong.setText(answer1);
-                TextView giveUpArtist = (TextView) m2View.findViewById(R.id.giveUpArtistTV);
+                TextView giveUpArtist = m2View.findViewById(R.id.giveUpArtistTV);
                 String answer2 = "By: " + currentSong.getArtist();
                 giveUpArtist.setText(answer2);
 
@@ -1280,7 +1264,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                 // button for new game or remove?
 
-                Button goBackHome = (Button) m2View.findViewById(R.id.backHomeQuit);
+                Button goBackHome = m2View.findViewById(R.id.backHomeQuit);
                 goBackHome.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

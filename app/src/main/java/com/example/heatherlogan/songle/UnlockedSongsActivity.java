@@ -20,7 +20,7 @@ public class UnlockedSongsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_unlocked_songs);
-        ListView mListView = (ListView) findViewById(R.id.unlockedSongsListview);
+        ListView mListView = findViewById(R.id.unlockedSongsListview);
 
         played_songs = new SongDatasource(this);
 
@@ -54,7 +54,7 @@ public class UnlockedSongsActivity extends AppCompatActivity {
     }
 
     private void goBack(){
-        Button goBk = (Button) findViewById(R.id.gobackUnlockedSongs);
+        Button goBk = findViewById(R.id.gobackUnlockedSongs);
         goBk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

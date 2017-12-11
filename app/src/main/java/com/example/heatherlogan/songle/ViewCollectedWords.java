@@ -20,7 +20,7 @@ public class ViewCollectedWords extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_collected_words);
-        ListView mListView = (ListView) findViewById(R.id.collectedwordslistview);
+        ListView mListView = findViewById(R.id.collectedwordslistview);
 
         word_data = new CollectedWordsDatasource(this);
 
@@ -55,7 +55,7 @@ public class ViewCollectedWords extends AppCompatActivity {
     }
 
     private void goBack(){
-        Button goBk = (Button) findViewById(R.id.gobackColWords);
+        Button goBk = findViewById(R.id.gobackColWords);
         goBk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

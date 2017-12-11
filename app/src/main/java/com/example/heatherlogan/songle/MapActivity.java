@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -95,7 +96,7 @@ public class MapActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        progressbar = (ProgressBar) findViewById(R.id.progressBar);
+        progressbar = findViewById(R.id.progressBar);
         colwords_tv = findViewById(R.id.colwords_tv);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.google_map);
@@ -209,7 +210,6 @@ public class MapActivity
 
         Log.i(TAG, "Adding Markers");
         addMarkers();
-        setOnClickMarker();
 
         String s = "Collected Words " + numbercollectedmarkers + "/" + numberofmarkers;
         colwords_tv.setText(s);
@@ -226,7 +226,9 @@ public class MapActivity
 
     // Helper to move camera
     private void moveCamera(LatLng latLgn, float zoom) {
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLgn, zoom));
+
+        gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLgn, zoom));
+
     }
 
     protected void createLocationRequest() {
@@ -244,6 +246,8 @@ public class MapActivity
         }
     }
 
+
+    @VisibleForTesting
     @Override
     public void onConnected(Bundle connectionHint) {
         try {
@@ -267,34 +271,38 @@ public class MapActivity
                 double lon = mLastLocation.getLongitude();
 
                 currentLo = new LatLng(lat, lon);
+
+                currentLocationMarker = gMap.addMarker(new MarkerOptions().position(currentLo).title("Your Location")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+
+                collectableRadius = gMap.addCircle(new CircleOptions().center(currentLo)
+                        .radius(60).strokeColor(Color.CYAN));
+
+                moveCamera(currentLo, DEFAULT_ZOOM);
+
+                setOnClickMarker();
+
+
+
             } else {
                 /* Notify player  */
 
-                Snackbar snackbar = Snackbar.make(findViewById(R.id.layout1),
-                        "Your current location cannot be found.\nPlease check location services.",
-                        Snackbar.LENGTH_INDEFINITE);
-                TextView snackbarTV = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+                    Snackbar snackbar = Snackbar.make(findViewById(R.id.layout1),
+                            "Your current location cannot be found.\nPlease check location services.",
+                            Snackbar.LENGTH_LONG);
+                    TextView snackbarTV = (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
 
-                snackbar.getView().setBackgroundColor(Color.DKGRAY);
-                snackbarTV.setTextColor(Color.WHITE);
-                snackbarTV.setTextSize(20);
-                snackbar.show();
+                    snackbar.getView().setBackgroundColor(Color.DKGRAY);
+                    snackbarTV.setTextColor(Color.WHITE);
+                    snackbarTV.setTextSize(20);
+                    snackbar.show();
 
-                /* Setting a default location to prevent crash */
+                LatLng defaultLocation = new LatLng(55.944899, -3.188864);
 
-                double lat = 55.944088;
-                double lon = -3.187219;
+                moveCamera(defaultLocation, 17);
 
-                currentLo = new LatLng(lat, lon);
             }
 
-            currentLocationMarker = gMap.addMarker(new MarkerOptions().position(currentLo).title("Your Location")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-
-            collectableRadius = gMap.addCircle(new CircleOptions().center(currentLo)
-                                .radius(60).strokeColor(Color.CYAN));
-
-            moveCamera(currentLo, DEFAULT_ZOOM);
 
         } else {
             ActivityCompat.requestPermissions(this,
@@ -303,12 +311,13 @@ public class MapActivity
             Log.e(TAG, "Permission not granted");
         }
     }
+
+    @VisibleForTesting
     @Override
     public void onLocationChanged(Location current) {
 
-        if (current == null) {
-            System.out.print("Null"); //Put Toast Here
-        } else {
+        if (current != null) {
+
             mLastLocation = current;
 
             System.out.println("[onLocationChanged] Lat / long now (" +
@@ -316,9 +325,9 @@ public class MapActivity
 
             LatLng lastLocationCoords = new LatLng(current.getLatitude(), current.getLongitude());
 
+           // gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastLocationCoords, DEFAULT_ZOOM));
 
-            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastLocationCoords, DEFAULT_ZOOM));
-
+            moveCamera(lastLocationCoords, DEFAULT_ZOOM);
 
             if (currentLocationMarker != null) {
                 currentLocationMarker.remove();
@@ -336,6 +345,20 @@ public class MapActivity
             collectableRadius = gMap.addCircle(new CircleOptions()
                     .center(lastLocationCoords)
                     .radius(60).strokeColor(Color.CYAN));
+
+            setOnClickMarker();
+
+        } else {
+
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.layout1),
+                    "Your current location cannot be found.\nPlease check location services.",
+                    Snackbar.LENGTH_LONG);
+            TextView snackbarTV = (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+
+            snackbar.getView().setBackgroundColor(Color.DKGRAY);
+            snackbarTV.setTextColor(Color.WHITE);
+            snackbarTV.setTextSize(20);
+            snackbar.show();
 
         }
     }
@@ -432,39 +455,35 @@ public class MapActivity
             @Override
             public boolean onMarkerClick(Marker m) {
 
-                float[]distance = new float[2];
+                    // if user location is not available then markers are not clickable
 
-                Location.distanceBetween(m.getPosition().latitude, m.getPosition().longitude,
-                        collectableRadius.getCenter().latitude, collectableRadius.getCenter().longitude, distance);
+                    float[] distance = new float[2];
 
-                // checks whether clicked marker is within the radius.
+                    Location.distanceBetween(m.getPosition().latitude, m.getPosition().longitude,
+                            collectableRadius.getCenter().latitude, collectableRadius.getCenter().longitude, distance);
 
-                if (distance[0] > collectableRadius.getRadius()){
+                    // checks whether clicked marker is within the radius.
 
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.layout1), "You are too far away to collect this word!", Snackbar.LENGTH_LONG);
-                    TextView snackbarTV = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+                    if (distance[0] > collectableRadius.getRadius()) {
 
-                    snackbar.getView().setBackgroundColor(Color.DKGRAY);
-                    snackbarTV.setTextColor(Color.WHITE);
-                    snackbarTV.setTextSize(20);
-                    snackbar.show();
+                        Snackbar snackbar = Snackbar.make(findViewById(R.id.layout1), "You are too far away to collect this word!", Snackbar.LENGTH_LONG);
+                        TextView snackbarTV = (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
 
-                } else {
-
-                    if (m.getId().equals(currentLocationMarker.getId())) {
-
-                        return false;
+                        snackbar.getView().setBackgroundColor(Color.DKGRAY);
+                        snackbarTV.setTextColor(Color.WHITE);
+                        snackbarTV.setTextSize(20);
+                        snackbar.show();
 
                     } else {
-
-                        collectMarker(m);
-
+                        if (m.getId().equals(currentLocationMarker.getId())) {
+                            return false;
+                        } else {
+                            collectMarker(m);
+                        }
                     }
-                }
-                return false;
+                return true;
             }
         });
-
 
     }
 
@@ -546,7 +565,7 @@ public class MapActivity
             AlertDialog.Builder m2Builder = new AlertDialog.Builder(MapActivity.this);
             View m2View = getLayoutInflater().inflate(R.layout.found_word_dialog, null);
 
-                TextView tv = (TextView) m2View.findViewById(R.id.wordFoundTV);
+                TextView tv = m2View.findViewById(R.id.wordFoundTV);
                 tv.setText(result.getWord());
 
             m2Builder.setView(m2View);
@@ -650,7 +669,7 @@ public class MapActivity
     /*--------------------------------------Buttons---------------------------------------*/
 
     private void openCollectedWords(){
-        Button view_collected_words = (Button) findViewById(R.id.viewWordsFromMap);
+        Button view_collected_words = findViewById(R.id.viewWordsFromMap);
         view_collected_words.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -121,14 +121,10 @@ public class SongDatasource {
     public boolean songExistsInPlayed(String number){
 
         Cursor cursor = null;
-        String query = "SELECT played_song_number FROM " +MySQLiteHelper2.PLAYED_SONGS_TABLE+ " WHERE played_song_number=" + number; ;
+        String query = "SELECT played_song_number FROM " +MySQLiteHelper2.PLAYED_SONGS_TABLE+ " WHERE played_song_number=" + number;
         cursor = db.rawQuery(query, null);
 
-        if (cursor.getCount()>0) {
-            return true;
-        } else {
-            return false;
-        }
+        return cursor.getCount() > 0;
     }
 
 

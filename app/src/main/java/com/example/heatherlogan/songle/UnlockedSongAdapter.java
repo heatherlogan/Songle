@@ -37,8 +37,8 @@ public class UnlockedSongAdapter extends ArrayAdapter<Song> {
 
         convertView = inflater.inflate(mResource, parent, false);
 
-        TextView nameTV = (TextView) convertView.findViewById(R.id.songTextView);
-        TextView artistTV = (TextView) convertView.findViewById(R.id.artistTextView);
+        TextView nameTV = convertView.findViewById(R.id.songTextView);
+        TextView artistTV = convertView.findViewById(R.id.artistTextView);
 
         nameTV.setText(name);
         artistTV.setText(artist);

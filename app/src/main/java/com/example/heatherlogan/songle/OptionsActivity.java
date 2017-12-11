@@ -105,7 +105,7 @@ public class OptionsActivity extends AppCompatActivity {
                         dialog.dismiss();
 
                         Snackbar snackbar = Snackbar.make(findViewById(R.id.linearlayout), "Game has been reset", Snackbar.LENGTH_LONG);
-                        TextView snackbarTV = (TextView) (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+                        TextView snackbarTV = (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
 
                         snackbar.getView().setBackgroundColor(Color.DKGRAY);
                         snackbarTV.setTextColor(Color.WHITE);
@@ -134,7 +134,7 @@ public class OptionsActivity extends AppCompatActivity {
 
     private void goBack(){
 
-            Button goback = (Button) findViewById(R.id.goBackOptions);
+            Button goback = findViewById(R.id.goBackOptions);
             goback.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

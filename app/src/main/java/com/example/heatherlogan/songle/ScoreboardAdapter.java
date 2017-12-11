@@ -55,9 +55,9 @@ public class ScoreboardAdapter extends ArrayAdapter<User> {
 
     private static String formatTime(int time){
 
-            int hours =   (int) ((time / (1000*60*60)));
-            int minutes = (int) ((time / (1000*60) % 60));
-            int seconds = (int) ((time / 1000) % 60);
+            int hours = (time / (1000*60*60));
+            int minutes = (time / (1000*60) % 60);
+            int seconds = (time / 1000) % 60;
 
             StringBuilder formattedTime = new StringBuilder();
 

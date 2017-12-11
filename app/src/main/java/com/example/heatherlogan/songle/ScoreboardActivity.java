@@ -21,7 +21,7 @@ public class ScoreboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scoreboard);
-        ListView mListView = (ListView) findViewById(R.id.scoreboardListView);
+        ListView mListView = findViewById(R.id.scoreboardListView);
 
         scoreboard_data = new ScoreboardDatasource(this);
 
@@ -60,7 +60,7 @@ public class ScoreboardActivity extends AppCompatActivity {
 
     private void goBack() {
 
-        Button goback = (Button) findViewById(R.id.gobackScoreboard);
+        Button goback = findViewById(R.id.gobackScoreboard);
         goback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
