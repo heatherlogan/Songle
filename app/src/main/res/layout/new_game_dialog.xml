@@ -8,7 +8,7 @@
               android:weightSum="1">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/areyousureTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Are you sure you want to start a new game?"

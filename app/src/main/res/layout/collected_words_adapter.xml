@@ -39,10 +39,10 @@
             android:textAlignment="center"
             android:textColor="@color/blue"
             android:textSize="15sp"
-         />
+            />
 
 
 
 
-        </LinearLayout>
     </LinearLayout>
+</LinearLayout>

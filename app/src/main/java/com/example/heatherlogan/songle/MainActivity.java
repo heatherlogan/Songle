@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
             dialog.show();
 
         } else {
-            Log.i(TAG, "Google API not avalable");
+            Log.i(TAG, "Google API not available");
             return false;
         }
         return false;

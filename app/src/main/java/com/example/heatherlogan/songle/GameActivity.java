@@ -151,7 +151,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         } else {
             Log.i(TAG, "Device does not have step counter");
             deviceHasStepCounter = false;
-            tvSteps.setText(R.string.StepCountNotAvailable);
+            tvSteps.setText(" ");
         }
 
     }
@@ -170,6 +170,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         savedInstanceState.putLong("Chronotime", mChronometer.getBase());
         savedInstanceState.putString("stepSting", "Steps: " + numSteps );
 
+        savedInstanceState.putInt("numSteps", numSteps);
+
         Log.i("Instance State", "onSaveInstanceState");
     }
 
@@ -180,7 +182,12 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         if((savedInstanceState !=null) && savedInstanceState.containsKey("Chronotime")) {
             mChronometer.setBase(savedInstanceState.getLong("Chronotime"));
         }
-        tvSteps.setText(savedInstanceState.getString("stepString"));
+        if((savedInstanceState !=null) && savedInstanceState.containsKey("numSteps")) {
+
+            numSteps = savedInstanceState.getInt("numSteps");
+            tvSteps.setText("Steps: " + numSteps);
+        }
+
 
         Log.i("Instance state", "onRestoreInstanceState");
     }
@@ -437,18 +444,16 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         for (Song song : songs) {
 
             // for testing
-
             result.append(" \n");
             result.append(song.getNumber());
             result.append(" : " + song.getTitle() + " : " + song.getArtist() + " : " + song.getLink() + "");
-
-            Song unplayed = new Song(song.getNumber(), song.getArtist(), song.getTitle());
 
             songsArrayList.add(song);
         }
 
         System.out.print("All songs: ");
         for (Song p : songsArrayList) {
+
             if ((song_data.songExistsInPlayed(p.getNumber()))){
                 System.out.print("(" + p.getNumber() +")");
             } else {
@@ -677,8 +682,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
             } else {
 
                 if (deviceHasStepCounter) {
-                    final int steps = 0; // change to getSteps
-                    if (steps < 2000) {
+
+                    if (numSteps < 2000) {
 
                         // User has not walked enough steps to get a hint.
                         AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
@@ -687,7 +692,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                         Button bttn = mView.findViewById(R.id.requestHintNo);
 
-                        String s = "You must walk " + (2000 - steps) + " more steps to get a hint!";
+                        String s = "You must walk " + (2000 - numSteps) + " more steps to get a hint!";
                         tv.setText(s);
 
                         mBuilder.setView(mView);
@@ -710,7 +715,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                         Button bttnYes = mView.findViewById(R.id.getHintYes);
                         Button bttnNo = mView.findViewById(R.id.getHintNo);
 
-                        String str = "You have walked " + steps + " steps and have unlocked a hint!";
+                        String str = "You have walked " + numSteps + " steps and have unlocked a hint!";
                         tv.setText(str);
 
                         mBuilder.setView(mView);
@@ -775,7 +780,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                         TextView tv = mView.findViewById(R.id.guessTV2);
 
                         Button bttn = mView.findViewById(R.id.requestHintNo);
-
 
                         String str = "You must have played for 1 hour to get a hint!";
                         tv.setText(str);
@@ -858,8 +862,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
         SharedPreferences.Editor editor = mPreferences.edit();
         String lyricURL = mPreferences.getString("lyricUrl_key", "");
-
-        StringBuilder l = new StringBuilder();
 
         //download lyric url
         try {
@@ -996,8 +998,11 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
     public void handleCorrectGuess(){
 
+        mChronometer.stop(); 
+
         final long timeToComplete = SystemClock.elapsedRealtime() - mChronometer.getBase();
         final int stepsToComplete = numSteps;
+
         onStopTimer();
 
         AlertDialog.Builder m4Builder = new AlertDialog.Builder(GameActivity.this);

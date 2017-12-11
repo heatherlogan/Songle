@@ -58,6 +58,14 @@ public class ScoreboardActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onBackPressed(){
+        Intent i = new Intent(ScoreboardActivity.this, MainActivity.class);
+        startActivity(i);
+    }
+
+
+
     private void goBack() {
 
         Button goback = findViewById(R.id.gobackScoreboard);

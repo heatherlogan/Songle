@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -83,6 +84,9 @@ public class MapActivity
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     public static final float DEFAULT_ZOOM = 20.0f;
 
+    private static Snackbar snackbar;
+
+
     private Marker currentLocationMarker;
     private Circle collectableRadius;
 
@@ -130,6 +134,18 @@ public class MapActivity
         // buttons
 
         openCollectedWords();
+
+
+
+
+        snackbar = Snackbar.make(findViewById(R.id.layout1),
+                "Your current location cannot be found.\nPlease check location services.",
+                Snackbar.LENGTH_INDEFINITE);
+        TextView snackbarTV = (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+
+        snackbar.getView().setBackgroundColor(Color.DKGRAY);
+        snackbarTV.setTextColor(Color.WHITE);
+        snackbarTV.setTextSize(20);
 
     }
 
@@ -276,7 +292,7 @@ public class MapActivity
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 
                 collectableRadius = gMap.addCircle(new CircleOptions().center(currentLo)
-                        .radius(60).strokeColor(Color.CYAN));
+                        .radius(3).strokeColor(Color.CYAN));
 
                 moveCamera(currentLo, DEFAULT_ZOOM);
 
@@ -285,16 +301,8 @@ public class MapActivity
 
 
             } else {
-                /* Notify player  */
+                /* Notify player that location is not available*/
 
-                    Snackbar snackbar = Snackbar.make(findViewById(R.id.layout1),
-                            "Your current location cannot be found.\nPlease check location services.",
-                            Snackbar.LENGTH_LONG);
-                    TextView snackbarTV = (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
-
-                    snackbar.getView().setBackgroundColor(Color.DKGRAY);
-                    snackbarTV.setTextColor(Color.WHITE);
-                    snackbarTV.setTextSize(20);
                     snackbar.show();
 
                 LatLng defaultLocation = new LatLng(55.944899, -3.188864);
@@ -302,7 +310,6 @@ public class MapActivity
                 moveCamera(defaultLocation, 17);
 
             }
-
 
         } else {
             ActivityCompat.requestPermissions(this,
@@ -315,6 +322,8 @@ public class MapActivity
     @VisibleForTesting
     @Override
     public void onLocationChanged(Location current) {
+
+        snackbar.dismiss();
 
         if (current != null) {
 
@@ -344,23 +353,16 @@ public class MapActivity
 
             collectableRadius = gMap.addCircle(new CircleOptions()
                     .center(lastLocationCoords)
-                    .radius(60).strokeColor(Color.CYAN));
+                    .radius(3).strokeColor(Color.CYAN));
 
             setOnClickMarker();
 
         } else {
 
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.layout1),
-                    "Your current location cannot be found.\nPlease check location services.",
-                    Snackbar.LENGTH_LONG);
-            TextView snackbarTV = (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
-
-            snackbar.getView().setBackgroundColor(Color.DKGRAY);
-            snackbarTV.setTextColor(Color.WHITE);
-            snackbarTV.setTextSize(20);
-            snackbar.show();
+                snackbar.show();
 
         }
+
     }
 
     @Override
@@ -466,13 +468,13 @@ public class MapActivity
 
                     if (distance[0] > collectableRadius.getRadius()) {
 
-                        Snackbar snackbar = Snackbar.make(findViewById(R.id.layout1), "You are too far away to collect this word!", Snackbar.LENGTH_LONG);
-                        TextView snackbarTV = (snackbar.getView()).findViewById(android.support.design.R.id.snackbar_text);
+                        Snackbar cantCollectSnack = Snackbar.make(findViewById(R.id.layout1), "You are too far away to collect this word!", Snackbar.LENGTH_LONG);
+                        TextView cantCollectSnackTV = (cantCollectSnack.getView()).findViewById(android.support.design.R.id.snackbar_text);
 
-                        snackbar.getView().setBackgroundColor(Color.DKGRAY);
-                        snackbarTV.setTextColor(Color.WHITE);
-                        snackbarTV.setTextSize(20);
-                        snackbar.show();
+                        cantCollectSnack.getView().setBackgroundColor(Color.DKGRAY);
+                        cantCollectSnackTV.setTextColor(Color.WHITE);
+                        cantCollectSnackTV.setTextSize(25);
+                        cantCollectSnack.show();
 
                     } else {
                         if (m.getId().equals(currentLocationMarker.getId())) {
@@ -489,7 +491,6 @@ public class MapActivity
 
     public void collectMarker(Marker m){
 
-        System.out.println("numbercollectedmarkers " + numbercollectedmarkers) ;
         numbercollectedmarkers += 1;
 
         String statsstring = "Collected Words: " + numbercollectedmarkers + "/" + numberofmarkers;
@@ -640,7 +641,7 @@ public class MapActivity
             String w = result.getWord();
             int lz = result.getLine();
             int p = result.getPos();
-            System.out.println("word: " + w + " line: " + lz + " pos: " + p);
+            Log.i(TAG, "word: " + w + " line: " + lz + " position: " + p);
 
             return result;
         }
