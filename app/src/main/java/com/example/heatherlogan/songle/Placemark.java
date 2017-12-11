@@ -5,7 +5,7 @@ import android.support.design.widget.CoordinatorLayout;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
- * Created by heatherlogan on 27/10/2017.
+ * Placemark object
  */
 
 public class Placemark {

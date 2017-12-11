@@ -5,12 +5,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * Created by heatherlogan on 21/11/2017.
+ * Used two SQLite helpers due to 'No such table error'
  */
 
 public class MySQLiteHelper2 extends SQLiteOpenHelper {
 
-    // for scoreboard table
+    // for scoreboard table, played and unplayed songs
 
     public static final String SCOREBOARD_TABLE = "scoreboard_table" ;
     public static final String ID = "scoreboard_id";

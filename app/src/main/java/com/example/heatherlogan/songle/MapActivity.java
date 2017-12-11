@@ -86,7 +86,6 @@ public class MapActivity
 
     private static Snackbar snackbar;
 
-
     private Marker currentLocationMarker;
     private Circle collectableRadius;
 
@@ -129,14 +128,14 @@ public class MapActivity
         SharedPreferences.Editor editor = mPreferences.edit();
         String lyricURL = mPreferences.getString("lyricUrl_key","");
 
-        Log.i(TAG, "Got lyric URL from Shared Preferences");
+        Log.i(TAG, "Lyric URL from Shared Preferences");
 
-        // buttons
+        /* buttons */
 
         openCollectedWords();
 
 
-
+        /* Set up snackbar to notify user that location cannot be found. */
 
         snackbar = Snackbar.make(findViewById(R.id.layout1),
                 "Your current location cannot be found.\nPlease check location services.",
@@ -207,7 +206,7 @@ public class MapActivity
             int colmarkers = savedInstanceState.getInt("numcollectedmarkers");
             int totalmarkers = savedInstanceState.getInt("numtotalmarkers");
 
-            System.out.println("col markers: " + colmarkers);
+            Log.i(TAG, "Number of collected markers: " + colmarkers);
 
             String s = "Collected Words: " + colmarkers + "/" + totalmarkers;
             colwords_tv.setText(s);
@@ -240,9 +239,10 @@ public class MapActivity
         gMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
-    // Helper to move camera
+
     private void moveCamera(LatLng latLgn, float zoom) {
 
+        /* Helper to move camera */
         gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLgn, zoom));
 
     }
@@ -254,7 +254,8 @@ public class MapActivity
         mLocationRequest.setFastestInterval(1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        // Start Location Updates
+        /* Start Location Updates */
+
         int permissionCheck = ContextCompat.checkSelfPermission(this, FINE_LOCATION);
 
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
@@ -270,8 +271,8 @@ public class MapActivity
             createLocationRequest();
 
         } catch (java.lang.IllegalStateException ise) {
-            System.out.println("IllegalStateException thrown [onConnected]");
-            Log.e(TAG, "Illegal state exception");
+
+            Log.e(TAG, "Illegal state exception [onConnected]");
         }
 
         if (ContextCompat.checkSelfPermission(this,
@@ -283,6 +284,8 @@ public class MapActivity
 
             if (mLastLocation!=null) {
 
+                /* Set up user location markers and radius*/
+
                 double lat = mLastLocation.getLatitude();
                 double lon = mLastLocation.getLongitude();
 
@@ -292,16 +295,16 @@ public class MapActivity
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 
                 collectableRadius = gMap.addCircle(new CircleOptions().center(currentLo)
-                        .radius(3).strokeColor(Color.CYAN));
+                        .radius(60).strokeColor(Color.CYAN));
 
                 moveCamera(currentLo, DEFAULT_ZOOM);
 
                 setOnClickMarker();
 
-
-
             } else {
-                /* Notify player that location is not available*/
+
+                /* Notify player that location is not available with snackbar
+                * Zoom into general play area */
 
                     snackbar.show();
 
@@ -329,12 +332,10 @@ public class MapActivity
 
             mLastLocation = current;
 
-            System.out.println("[onLocationChanged] Lat / long now (" +
+            Log.i("[onLocationChanged]:", " Lat / long now (" +
                     String.valueOf(current.getLatitude()) + "," + String.valueOf(current.getLongitude()) + ")");
 
             LatLng lastLocationCoords = new LatLng(current.getLatitude(), current.getLongitude());
-
-           // gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastLocationCoords, DEFAULT_ZOOM));
 
             moveCamera(lastLocationCoords, DEFAULT_ZOOM);
 
@@ -353,11 +354,16 @@ public class MapActivity
 
             collectableRadius = gMap.addCircle(new CircleOptions()
                     .center(lastLocationCoords)
-                    .radius(3).strokeColor(Color.CYAN));
+                    .radius(60).strokeColor(Color.CYAN));
+
+            /*Set click marker when user location is available as otherwise
+            * user should not be able to pick up markers*/
 
             setOnClickMarker();
 
         } else {
+
+            /* Notify user that location is not available */
 
                 snackbar.show();
 
@@ -378,6 +384,9 @@ public class MapActivity
     /*---------------------------------------------------- Markers ----------------------------------------------------- */
 
      protected void addMarkers() {
+
+         /* Get markers from database and add to map with marker colour based on
+         * their description */
 
          List<Placemark> m = data.getMarkers();
 
@@ -449,7 +458,6 @@ public class MapActivity
          progressbar.setMax(numberofmarkers);
      }
 
-    // when clicked, marker is remove marker from map and database, corresponding word displayed and added to Collected words database.
      private void setOnClickMarker() {
 
         gMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -457,14 +465,15 @@ public class MapActivity
             @Override
             public boolean onMarkerClick(Marker m) {
 
-                    // if user location is not available then markers are not clickable
-
                     float[] distance = new float[2];
 
                     Location.distanceBetween(m.getPosition().latitude, m.getPosition().longitude,
                             collectableRadius.getCenter().latitude, collectableRadius.getCenter().longitude, distance);
 
-                    // checks whether clicked marker is within the radius.
+                    /* Checks whether clicked marker is within the radius.
+                    *  If so, user is able to collect it.
+                    *  Else, a snackbar is shown
+                    * */
 
                     if (distance[0] > collectableRadius.getRadius()) {
 
@@ -498,37 +507,32 @@ public class MapActivity
 
         progressbar.setProgress(numbercollectedmarkers);
 
-        // for matching marker to word in lyrics
+        /* for matching marker to word in lyrics */
 
         SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(MapActivity.this);
         SharedPreferences.Editor editor = mPreferences.edit();
         String lyricURL = mPreferences.getString("lyricUrl_key", "");
-
         String position = m.getTitle();
         TaskParameters params = new TaskParameters(lyricURL, position);
 
+        Log.i(TAG, "Matching marker with word");
+
         new FindWordInLyrics().execute(params);
 
+
+        Log.i(TAG, "removing marker from map and database.");
         m.remove();
         data.deleteMarker(new Placemark(m.getTitle(), m.getSnippet(), m.getPosition().longitude + "," + m.getPosition().latitude + ",0"));
 
-        // for testing
-        List<Placemark> pms = data.getMarkers();
-        StringBuilder result = new StringBuilder();
-
-        int count = 0;
-        for (Placemark placemark : pms) {
-            count++;
-            // result.append(" \n");
-            // result.append(" : " + plac emark.getName() + " : " + placemark.getCoordinates());
-        }
-        System.out.println("Number of markers: " + count);
 
     }
 
     /*------------------------------------------ Lyric Parsing ---------------------------------------------*/
 
-    // An object holding information word and position which is used to invoke an add to collected words list
+    /* Uses the name of the marker collected as the position in the song,
+    * Searches through lyrics and matches,
+    * Returns the word object.
+    */
 
     private static class TaskParameters {
 
@@ -590,15 +594,12 @@ public class MapActivity
 
         private WordInfo getWord(String url, String position) throws IOException {
 
-            InputStream is = null;
+            InputStream is;
             String foundWord = "";
-
 
             SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(MapActivity.this);
             SharedPreferences.Editor editor = mPreferences.edit();
             String lyricURL = mPreferences.getString("lyricUrl_key","");
-
-            Log.i(TAG, "got lyricURL from SharedPref" + lyricURL);
 
             String[] parts = position.split(":");
             int lineNo = Integer.parseInt(parts[0]);
@@ -611,20 +612,22 @@ public class MapActivity
                 is = downloadLyricUrl(lyricURL);
                 int counter = 0;
 
-                System.out.println(lyricURL);
-
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
                 String line;
-                String word;
 
-                //get nth line
+                // get nth line
+
                 while ((line = br.readLine()) != null) {
                     counter++;
+
                     if (counter == lineNo) {
-                        //remove leading whitespaces and numbers from lines
+
+                        // remove leading whitespaces and numbers from lines
+
                         String line2 = line.replaceAll("[0-9]", "").trim();
 
-                        //retrieve nth word of line
+                        // retrieve nth word of line
+
                         String[] wordArray = line2.split("\\s+");
                         foundWord = wordArray[posNo - 1];
                     }
@@ -641,7 +644,7 @@ public class MapActivity
             String w = result.getWord();
             int lz = result.getLine();
             int p = result.getPos();
-            Log.i(TAG, "word: " + w + " line: " + lz + " position: " + p);
+            Log.i("Found word: ", w + " line: " + lz + " position: " + p);
 
             return result;
         }

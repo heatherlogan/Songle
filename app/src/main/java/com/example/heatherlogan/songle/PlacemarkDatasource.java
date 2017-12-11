@@ -17,6 +17,9 @@ import java.util.ArrayList;
 
 public class PlacemarkDatasource {
 
+
+    /* A datasource containing all helper methods used when dealing with placemarks */
+
     private MySQLiteHelper dbhelper;
     private SQLiteDatabase db;
 
@@ -36,6 +39,8 @@ public class PlacemarkDatasource {
 
     public void addMarker(Placemark placemark){
 
+        /* Add placemark to database */
+
         ContentValues cv = new ContentValues();
 
         cv.put(MySQLiteHelper.TITLE, placemark.getName());
@@ -46,6 +51,8 @@ public class PlacemarkDatasource {
     }
 
     public List<Placemark> getMarkers(){
+
+        /* Retrieve all placemarks present in the database in the form of a list */
 
         List<Placemark> markers = new ArrayList<>();
 

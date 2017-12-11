@@ -2,7 +2,7 @@ package com.example.heatherlogan.songle;
 
 import java.util.Comparator;
 /**
- * Created by heatherlogan on 03/11/2017.
+ * Word objects
  */
 
 public class WordInfo {

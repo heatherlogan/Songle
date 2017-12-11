@@ -26,6 +26,7 @@ public class ViewCollectedWords extends AppCompatActivity {
 
         try {
             word_data.open();
+            Log.i(TAG, "Words database opened");
         } catch (Exception e ){
             Log.e(TAG, "DATABASE EXCEPTION");
         }
@@ -38,18 +39,6 @@ public class ViewCollectedWords extends AppCompatActivity {
 
         WordListAdapter adapter = new WordListAdapter(this, R.layout.collected_words_adapter, arraylist_words);
         mListView.setAdapter(adapter);
-
-        //testing
-
-        StringBuilder r = new StringBuilder();
-        int count = 0;
-        for (WordInfo w : collected_words ) {
-            count ++;
-            r.append(" \n");
-            r.append(" : " + w.getWord() + " : " + w.getLine() +"," + w.getPos());
-        }
-        System.out.println(r.toString());
-        System.out.println("Number of collectedWords: " + count);
 
         goBack();
     }

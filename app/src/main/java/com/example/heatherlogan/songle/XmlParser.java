@@ -59,6 +59,8 @@ public class XmlParser {
         String title = null;
         String link = null;
 
+        /* Identify tags and send contents to relevant method*/
+
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -79,7 +81,8 @@ public class XmlParser {
         return new Song(number, artist, title, link);
     }
 
-    //readNumber, readArtist, readTitle, returns strings
+    /* readNumber, readArtist, readTitle, returns strings */
+
     private String readNumber(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, ns, "Number");
         String number = readText(parser);
@@ -108,6 +111,7 @@ public class XmlParser {
         return link;
     }
     // Extracts text values for readNumber, readArtist and readTitle
+
     private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
         String result = "";
         if (parser.next() == XmlPullParser.TEXT) {
@@ -116,6 +120,8 @@ public class XmlParser {
         }
         return result;
     }
+
+    /* Skips irrelevant tags */
 
     private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
         if (parser.getEventType() != XmlPullParser.START_TAG) {

@@ -10,6 +10,8 @@ import android.content.Context;
 
 public class MySQLiteHelper extends SQLiteOpenHelper {
 
+    /* Databases for markers and collected words*/
+
     public static final String MARKERS_TABLE = "markers";
     public static final String ID = "marker_id";
     public static final String TITLE = "marker_title";

@@ -53,7 +53,9 @@ public class ScoreboardAdapter extends ArrayAdapter<User> {
         return convertView;
     }
 
-    private static String formatTime(int time){
+    private static String formatTime (int time){
+
+        /* Helper method for returning time in hrs/mins/secs*/
 
             int hours = (time / (1000*60*60));
             int minutes = (time / (1000*60) % 60);

@@ -31,28 +31,19 @@ public class ScoreboardActivity extends AppCompatActivity {
             Log.e(TAG, "DATABASE EXCEPTION");
         }
 
+
+        /* Displays in order of fastest time */
+
         List<User> scoreboard_users = scoreboard_data.getScoreboard();
 
         ArrayList<User> scoreboard_array = new ArrayList<User>(scoreboard_users);
 
         Collections.sort(scoreboard_array, User.UserComparator);
-        // add comparator
 
+        // add comparator
         ScoreboardAdapter adapter = new ScoreboardAdapter(
                 this, R.layout.scoreboard_adapter_layout, scoreboard_array);
         mListView.setAdapter(adapter);
-
-        //testing
-
-        StringBuilder r = new StringBuilder();
-        int count = 0;
-        for (User u : scoreboard_users ) {
-            count ++;
-            r.append(" \n");
-            r.append(" : " + u.getUserName() + " : " + u.getUserTime() +"," + u.getUserLevel());
-        }
-        System.out.println(r.toString());
-        System.out.println("Number of collectedWords: " + count);
 
         goBack();
     }
@@ -60,11 +51,13 @@ public class ScoreboardActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
+
+        /* Override back button to prevent user from undoing the completion of the game
+        * After being directed to the scoreboard.*/
+
         Intent i = new Intent(ScoreboardActivity.this, MainActivity.class);
         startActivity(i);
     }
-
-
 
     private void goBack() {
 

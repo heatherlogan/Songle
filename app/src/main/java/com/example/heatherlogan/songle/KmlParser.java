@@ -1,7 +1,6 @@
 package com.example.heatherlogan.songle;
 
-// Adapted from XmlParser, which was referenced from --
-
+import android.util.Log;
 import android.util.Xml;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -18,7 +17,9 @@ import java.io.InputStream;
 
 public class KmlParser {
 
-    public static final String ns = null;
+    public final String TAG = "KML_PARSER";
+
+    private static final String ns = null;
 
     public List<Placemark> parseKml(String in) throws XmlPullParserException, IOException {
 
@@ -26,10 +27,12 @@ public class KmlParser {
 
         try {
             XmlPullParser kParser = Xml.newPullParser();
-
             kParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             kParser.setInput(stream, null);
             kParser.nextTag();
+
+            Log.i(TAG, "Parsing KML");
+
             return readKmlFeed(kParser);
 
             } finally {
@@ -38,7 +41,9 @@ public class KmlParser {
         }
     }
 
-    private List<Placemark> readKmlFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
+    public List<Placemark> readKmlFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
+
+        /* Reads the KML feed and returns a list of the placemarks*/
 
         List<Placemark> placemarks = new ArrayList();
 
@@ -71,6 +76,7 @@ public class KmlParser {
         String styleUrl = null;
         String coordinates = null;
 
+        /* Identifies relevant tags and sends to appropriate method*/
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {

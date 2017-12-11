@@ -34,13 +34,18 @@ public class OptionsActivity extends AppCompatActivity {
             Log.e(TAG, "DATABASE EXCEPTION");
         }
 
+        /* Buttons */
 
         openHowToPlay();
         openUnlockedSongs();
         resetGame();
         goBack();
     }
+
     private void openHowToPlay(){
+
+        /* Simple how to play dialog dismissed by clicking anywhere on dialog */
+
         Button howtoplayBttn = findViewById(R.id.howtoplayBttn);
         howtoplayBttn.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -63,8 +68,6 @@ public class OptionsActivity extends AppCompatActivity {
         });
     }
 
-
-
     private void openUnlockedSongs() {
         Button viewUnlockedBttn = findViewById(R.id.viewUnlockedBttn);
         viewUnlockedBttn.setOnClickListener(new View.OnClickListener() {
@@ -76,8 +79,10 @@ public class OptionsActivity extends AppCompatActivity {
         });
     }
 
-
     private void resetGame(){
+
+        /* User can reset game which clears played songs and scoreboard table. */
+
         Button resetGame = findViewById(R.id.resetGame);
         resetGame.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -112,7 +117,6 @@ public class OptionsActivity extends AppCompatActivity {
                         snackbarTV.setTextSize(20);
                         snackbar.show();
 
-
                     }
                 });
 
@@ -130,7 +134,6 @@ public class OptionsActivity extends AppCompatActivity {
 
 
     }
-
 
     private void goBack(){
 

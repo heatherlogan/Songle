@@ -26,12 +26,13 @@ public class UnlockedSongAdapter extends ArrayAdapter<Song> {
     @Override
     public View getView (int position, View convertView, ViewGroup parent){
 
-        // using name of song in place of number for the purpose of displaying on unlocked songs activity
+        /* using name of song in place of number for the purpose of displaying
+        * on unlocked songs activity */
 
         String name = getItem(position).getTitle();
         String artist = getItem(position).getArtist();
 
-        Song song = new Song(name, artist, null, null);
+        // Song song = new Song(name, artist, null, null);
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
 

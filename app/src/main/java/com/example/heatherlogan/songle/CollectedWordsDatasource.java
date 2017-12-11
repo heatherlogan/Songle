@@ -27,9 +27,6 @@ public class CollectedWordsDatasource {
     public void open(){
         db = dbhelper.getWritableDatabase();
     }
-    public void close(){
-        db.close();
-    }
 
     public void addCollectedWord(WordInfo word){
 

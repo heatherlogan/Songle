@@ -25,6 +25,7 @@ public class UnlockedSongsActivity extends AppCompatActivity {
         played_songs = new SongDatasource(this);
 
         try {
+            Log.i(TAG, "Played songs database opened");
             played_songs.open();
         } catch (Exception e ){
             Log.e(TAG, "DATABASE EXCEPTION");
@@ -37,18 +38,6 @@ public class UnlockedSongsActivity extends AppCompatActivity {
         UnlockedSongAdapter adapter = new UnlockedSongAdapter(this, R.layout.unlocked_songs_adapter, played_list);
         mListView.setAdapter(adapter);
 
-
-        //testing
-
-        StringBuilder r = new StringBuilder();
-        int count = 0;
-        for (Song s : played_list ) {
-            count ++;
-            r.append(" \n");
-            r.append(" : " + s.getNumber() + " : " + s.getTitle() +","+ s.getArtist());
-        }
-        System.out.println(r.toString());
-        System.out.println("Number of played Songs: " + count);
 
         goBack();
     }

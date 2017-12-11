@@ -87,24 +87,6 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
         return (ConnectivityReceiver.isConnected());
     }
 
-    // Showing the status in Snackbar
-    private void showSnack(boolean isConnected) {
-        String message;
-        int color;
-        if (isConnected) {
-            message = "Good! Connected to Internet";
-            color = Color.WHITE;
-        } else {
-            message = "Sorry! Not connected to internet";
-            color = Color.RED;
-        }
-
-        Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
-
-        toast.show();
-    }
-
-
     @Override
     protected void onResume(){
         super.onResume();

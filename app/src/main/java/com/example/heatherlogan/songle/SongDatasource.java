@@ -63,13 +63,14 @@ public class SongDatasource {
         db.insert(MySQLiteHelper2.PLAYED_SONGS_TABLE, null, cv);
     }
 
-    // remove songs from databases
-
     public void removeUnplayedSong(String number){
+
+        /* remove songs from databases */
 
         db.delete(MySQLiteHelper2.UNPLAYED_SONGS_TABLE, "unplayed_song_number = ?", new String[] { number });
     }
-    // retrieve database in list form
+
+    /* retrieve database in list form */
 
     public List<Song> getUnplayedSongs(){
 
@@ -116,9 +117,9 @@ public class SongDatasource {
         return s;
     }
 
-    // check if song exists in played Songs database
-
     public boolean songExistsInPlayed(String number){
+
+        /* Check if song exists in played Songs database */
 
         Cursor cursor = null;
         String query = "SELECT played_song_number FROM " +MySQLiteHelper2.PLAYED_SONGS_TABLE+ " WHERE played_song_number=" + number;
@@ -126,8 +127,6 @@ public class SongDatasource {
 
         return cursor.getCount() > 0;
     }
-
-
 
     public void clearDatabase(String TABLE_NAME){
         String clearDB = "DELETE FROM " + TABLE_NAME;
