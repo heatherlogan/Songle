@@ -46,7 +46,6 @@ import java.util.TimerTask;
 import java.util.List;
 import java.util.Random;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -120,7 +119,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         onStartTimer();
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        Sensor accel = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mStepDetector = new StepDetector();
         mStepDetector.registerListener(this);
         tvSteps = findViewById(R.id.stepCounterTV);
@@ -185,7 +183,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         if((savedInstanceState !=null) && savedInstanceState.containsKey("numSteps")) {
 
             numSteps = savedInstanceState.getInt("numSteps");
-            tvSteps.setText("Steps: " + numSteps);
+            String s = "Steps: " + numSteps;
+            tvSteps.setText(s);
         }
 
 
@@ -418,7 +417,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         StringBuilder result = new StringBuilder();
 
         try {
-
             stream = downloadUrl(urlString);
             songs = mXmlParser.parse(stream);
 
@@ -447,7 +445,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         whether song is in played list and adds to unplayed database if not. */
 
         for (Song song : songs) {
-
             songsArrayList.add(song);
         }
 
@@ -883,11 +880,10 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
     private String getHint(String url) throws IOException {
 
-        InputStream is = null;
+        InputStream is;
         String hint = "";
 
         SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
-        SharedPreferences.Editor editor = mPreferences.edit();
         String lyricURL = mPreferences.getString("lyricUrl_key", "");
 
         /* Download the lyric url into an input stream, reads in and choses
@@ -928,7 +924,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     }
 
 }
-
 
     private InputStream downloadLyricUrl(String urlString) throws IOException {
 
@@ -1300,7 +1295,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                 mPreferences = PreferenceManager.getDefaultSharedPreferences(GameActivity.this);
                 SharedPreferences.Editor editor = mPreferences.edit();
                 editor.clear();
-                editor.commit();
+                editor.apply();
 
                 /* remove song from unplayed songs and add to unplayed songs. */
 
@@ -1309,7 +1304,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
                 Log.i(TAG, "Add " + currentSong.getTitle() + " to played songs");
                 song_data.addPlayedSong(new Song(currentSong.getNumber(), currentSong.getArtist(), currentSong.getTitle()));
-
 
                 Button goBackHome = m2View.findViewById(R.id.backHomeQuit);
                 goBackHome.setOnClickListener(new View.OnClickListener() {
@@ -1366,7 +1360,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
         ArrayList<User> scoreboard = new ArrayList<>(scoreboard_data.getScoreboard());
 
-        String place = null;
+        String place;
 
         int sb_length = scoreboard.size();
 

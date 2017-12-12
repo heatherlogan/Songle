@@ -26,13 +26,13 @@ public class ScoreboardDatasource {
         db.close();
     }
 
-    public void addToScoreboard(User user){
+    public void addToScoreboard(User user) {
 
         ContentValues cv = new ContentValues();
 
         cv.put(MySQLiteHelper2.NAME, user.getUserName());
         cv.put(MySQLiteHelper2.LEVEL, user.getUserLevel());
-        cv.put(MySQLiteHelper2.TIME,  user.getUserTime());
+        cv.put(MySQLiteHelper2.TIME, user.getUserTime());
         cv.put(MySQLiteHelper2.STEPS, user.getUserSteps());
 
         db.insert(MySQLiteHelper2.SCOREBOARD_TABLE, null, cv);

@@ -498,7 +498,7 @@ public class MapActivity
 
     }
 
-    public void collectMarker(Marker m){
+     public void collectMarker(Marker m){
 
         numbercollectedmarkers += 1;
 

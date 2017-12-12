@@ -30,6 +30,8 @@ public class CollectedWordsDatasource {
 
     public void addCollectedWord(WordInfo word){
 
+        /* Add word to database */
+
         ContentValues cv = new ContentValues();
 
         cv.put(MySQLiteHelper.WORD, word.getWord());
@@ -40,6 +42,8 @@ public class CollectedWordsDatasource {
     }
 
     public List<WordInfo> getCollectedWords(){
+
+        /* returns a list of items in database */
 
         List<WordInfo> collected_words = new ArrayList<>();
 
@@ -57,6 +61,7 @@ public class CollectedWordsDatasource {
     }
 
     private WordInfo cursorToWord (Cursor cursor){
+
 
         WordInfo w = new WordInfo();
 

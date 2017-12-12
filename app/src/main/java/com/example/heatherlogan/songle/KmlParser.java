@@ -3,8 +3,6 @@ package com.example.heatherlogan.songle;
 import android.util.Log;
 import android.util.Xml;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.apache.commons.io.IOUtils;
@@ -95,9 +93,6 @@ public class KmlParser {
                 skip(parser);
             }
         }
-
-        String lineNum = wordLocation.substring(0, wordLocation.indexOf(":"));
-        String wordNum = wordLocation.substring(wordLocation.indexOf(":") + 1, wordLocation.length());
 
         return new Placemark(wordLocation, description, styleUrl, coordinates);
     }
